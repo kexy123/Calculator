@@ -1,10 +1,14 @@
-﻿namespace Calculator
+﻿using Calculator.Value;
+
+namespace Calculator
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            Number a = 5;
+            Number b = 12;
+            Console.WriteLine(a + b);
         }
     }
 }
