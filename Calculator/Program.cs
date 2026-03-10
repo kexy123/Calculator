@@ -1,4 +1,5 @@
-﻿using Calculator.Value;
+﻿using Calculator.Operation;
+using Calculator.Value;
 
 namespace Calculator
 {
@@ -6,9 +7,8 @@ namespace Calculator
     {
         static void Main(string[] args)
         {
-            Number a = 5;
-            Number b = 12;
-            Console.WriteLine(a + b);
+            Number a = Convert.ToDouble(Console.ReadLine()), b = Convert.ToDouble(Console.ReadLine());
+            Console.WriteLine(ArithmeticOperators.Exponentiation.Execute(a, b));
         }
     }
 }
