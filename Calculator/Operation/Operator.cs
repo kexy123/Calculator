@@ -4,6 +4,8 @@ using Calculator.Value;
 
 namespace Calculator.Operation
 {
+    using Form = Func<IValue, IValue, IValue>;
+
     [Flags]
     public enum OperatorProperty
     {
@@ -14,12 +16,12 @@ namespace Calculator.Operation
     }
 
     [method: SetsRequiredMembers]
-    public struct Operator<A, B, R>(string symbol, OperatorProperty properties, sbyte precedence, Func<A, B, R> function)
+    public struct Operator(string symbol, OperatorProperty properties, sbyte precedence, Form function)
     {
         public required string Symbol = symbol;
         public required OperatorProperty Properties = properties;
         public required sbyte Precedence = precedence;
-        public required Func<A, B, R> Execute = function;
+        public required Form Execute = function;
 
         public readonly override string ToString() => $"Operator('{Symbol}')";
     }
