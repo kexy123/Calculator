@@ -1,7 +1,7 @@
 ﻿using Calculator.Value;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Calculator.Function
+namespace Calculator.Variable
 {
     using Form = Func<IValue[], IValue>;
     using ParameterMap = string[];
@@ -32,6 +32,7 @@ namespace Calculator.Function
         [SetsRequiredMembers]
         public Function(string name, Form function, uint parameters)
         {
+            NameCheck.ThrowOnInvalidName(name);
             Name = name;
             Execute = function;
             ParameterCount = parameters;
@@ -49,6 +50,7 @@ namespace Calculator.Function
         [SetsRequiredMembers]
         public Function(string name, string expression, ParameterMap parameterMap)
         {
+            NameCheck.ThrowOnInvalidName(name);
             Name = name;
             Expression = expression;
             ParameterMap = parameterMap;
