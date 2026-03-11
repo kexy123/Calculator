@@ -35,5 +35,7 @@ namespace Calculator.Value
         public static implicit operator Number(float value) => new(value);
         public static implicit operator Number(double value) => new(value);
         //public static implicit operator Number(decimal value) => new(value);
+
+        public static implicit operator Number(Boolean value) => new(value == true ? 1 : 0);
     }
 }
