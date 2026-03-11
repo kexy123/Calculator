@@ -14,12 +14,12 @@ namespace Calculator.Operation
     }
 
     [method: SetsRequiredMembers]
-    public struct Operator<P, R>(string symbol, OperatorProperty properties, sbyte precedence, Func<P, P, R> function)
+    public struct Operator<A, B, R>(string symbol, OperatorProperty properties, sbyte precedence, Func<A, B, R> function)
     {
         public required string Symbol = symbol;
         public required OperatorProperty Properties = properties;
         public required sbyte Precedence = precedence;
-        public required Func<P, P, R> Execute = function;
+        public required Func<A, B, R> Execute = function;
 
         public readonly override string ToString() => $"Operator('{Symbol}')";
     }
