@@ -13,20 +13,23 @@ namespace Calculator.Expression.Token
             tokenizer.AddToken(new(TokenType.Number, number));
             tokenizer.Index += number.Length;
         };
+
+        public static TokenFunction DumpWhitespace = (tokenizer, match) => tokenizer.Index += match.Value.Length;
     }
 
     [method: SetsRequiredMembers]
     public struct TokenPattern(string pattern, TokenFunction token)
     {
-        public required Regex Pattern = new(@$"\G{Regex.Escape(pattern)}", RegexOptions.Singleline);
+        public required Regex Pattern = new(@$"\G{pattern}", RegexOptions.Singleline);
         public required TokenFunction Execute = token;
     }
 
     public record TokenPatterns
     {
-        public static TokenPattern[] Patterns = [
+        public static TokenPattern[] ExpressionPatterns = [
             new(@"\d*\.\d*", TokenDumpFunctions.DumpNumber),
             new(@"\d+", TokenDumpFunctions.DumpNumber),
+            new(@"[\x00-\x1F\x7F\s ]+", TokenDumpFunctions.DumpWhitespace),
         ];
     }
 }

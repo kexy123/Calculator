@@ -30,15 +30,33 @@ namespace Calculator.Expression.Token
             foreach (TokenPattern pattern in TokenPatterns)
             {
                 Match match = pattern.Pattern.Match(Source, Index);
+                Console.WriteLine(pattern.Pattern);
                 if (!match.Success) continue;
                 pattern.Execute(this, match);
+                return;
             }
             throw new InvalidDataException($"Index {Index} of expression '{Source}' cannot be parsed.");
         }
 
+        /// <summary>
+        /// Tokenizes the equation.
+        /// </summary>
         public void Tokenize()
         {
             while (Index < Source.Length) NextToken();
+        }
+
+        // TODO: Refactor this into a Console solution.
+        public override string ToString()
+        {
+            string result = "";
+            uint index = 0;
+            foreach (Token token in TokenList)
+            {
+                result += index > 0 ? ", " + token : token;
+                index++;
+            }
+            return result;
         }
     }
 }
