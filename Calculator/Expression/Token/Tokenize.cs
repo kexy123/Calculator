@@ -30,7 +30,6 @@ namespace Calculator.Expression.Token
             foreach (TokenPattern pattern in TokenPatterns)
             {
                 Match match = pattern.Pattern.Match(Source, Index);
-                Console.WriteLine(pattern.Pattern);
                 if (!match.Success) continue;
                 pattern.Execute(this, match);
                 return;
