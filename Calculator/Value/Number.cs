@@ -18,6 +18,9 @@ namespace Calculator.Value
         //public static implicit operator decimal(Number number) => number.Value;
         public static implicit operator double(Number number) => number.Value;
 
+        [SetsRequiredMembers]
+        public Number(IValue value) : this(value is Number number ? number.Value : throw new ArgumentException(value + " is not a number."), "") { }
+
         public static implicit operator Number(sbyte value) => new(value);
         public static implicit operator Number(byte value) => new(value);
         public static implicit operator Number(short value) => new(value);
