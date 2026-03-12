@@ -4,7 +4,7 @@ using Core.Operation;
 using Core.Value;
 using System.Text.RegularExpressions;
 
-namespace Core.Contexts
+namespace Core.AssetContexts
 {
     using TokenFunction = Action<Tokenizer, Match>;
 

@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="Assets/Assets.csproj" Id="ac0dc0ff-0979-4bc4-88ff-f792f7219d73" />
   <Project Path="Calculator/Core.csproj" />
   <Project Path="CLI/CLI.csproj" Id="239135df-d161-463a-8848-d6833fe868c9" />
 </Solution>
