@@ -1,4 +1,5 @@
-﻿using Calculator.Expression.Token;
+﻿using Calculator.Expression;
+using Calculator.Expression.Token;
 using Calculator.Operation;
 using Calculator.Value;
 using System.Text.RegularExpressions;
@@ -7,8 +8,16 @@ namespace Calculator.Contexts
 {
     using TokenFunction = Action<Tokenizer, Match>;
 
+    public class Arithmetic : ICalculatorContext
+    {
+        TokenPattern[] ICalculatorContext.TokenPatterns => TokenPatterns.ExpressionPatterns;
+        Operator[] ICalculatorContext.Operators => [
+            Operators.Addition, Operators.Subtraction, Operators.Multiplication, Operators.Division, Operators.Modulo, Operators.Exponentiation
+        ];
+    }
+
     // Arithmetic tokens
-    public record ArithmeticTokens
+    file record Tokens
     {
         public static TokenFunction DumpNumber = (tokenizer, match) =>
         {
@@ -16,24 +25,32 @@ namespace Calculator.Contexts
             tokenizer.AddToken(new(TokenType.Number, number));
             tokenizer.Index += number.Length;
         };
+        
+        public static TokenFunction DumpOperation = (tokenizer, match) =>
+        {
+            string operation = match.Value;
+            //tokenizer.Context.();
+            tokenizer.AddToken(new(TokenType.Operator, operation));
+            tokenizer.Index += operation.Length;
+        };
 
         public static TokenFunction DumpWhitespace = (tokenizer, match) => tokenizer.Index += match.Value.Length;
     }
 
-    public partial record TokenPatterns
+    file record TokenPatterns
     {
         public static TokenPattern[] ExpressionPatterns = [
-            new(@"[\x00-\x1F\x7F\s ]+", ArithmeticTokens.DumpWhitespace),
+            new(@"[\x00-\x1F\x7F\s ]+", Tokens.DumpWhitespace),
 
-            new(@"\d*\.\d*", ArithmeticTokens.DumpNumber),
-            new(@"\d+", ArithmeticTokens.DumpNumber),
+            new(@"\d*\.\d*", Tokens.DumpNumber),
+            new(@"\d+", Tokens.DumpNumber),
 
-            //new(@"[-+*/^%]+", ArithmeticTokens.DumpOperation),
+            new(@"[-+*/^%()|]+", Tokens.DumpOperation),
         ];
     }
 
     // Operators
-    public partial record class OperatorFunctions
+    file record OperatorFunctions
     {
         public static IValue Addition(IValue a, IValue b) => new Number(new Number(a) + new Number(b));
         public static IValue Subtraction(IValue a, IValue b) => new Number(new Number(a) - new Number(b));
@@ -43,7 +60,7 @@ namespace Calculator.Contexts
         public static IValue Exponentiation(IValue a, IValue b) => new Number(Math.Pow(new Number(a), new Number(b)));
     }
 
-    public partial record class Operators
+    file record Operators
     {
         public static readonly Operator Addition = new("+", OperatorProperty.Regular, 4, OperatorFunctions.Addition);
         public static readonly Operator Subtraction = new("-", OperatorProperty.Regular, 4, OperatorFunctions.Subtraction);
