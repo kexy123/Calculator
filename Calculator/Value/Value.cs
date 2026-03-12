@@ -4,6 +4,7 @@
     {
         Number,
         Variable,
+        Array,
         Expression,
     }
 
