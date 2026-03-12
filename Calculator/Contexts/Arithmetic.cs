@@ -12,6 +12,7 @@ namespace Calculator.Contexts
     {
         TokenPattern[] ICalculatorContext.TokenPatterns => TokenPatterns.ExpressionPatterns;
         Operator[] ICalculatorContext.Operators => [
+            Operators.OpenBracket, Operators.ClosingBracket,
             Operators.Addition, Operators.Subtraction, Operators.Multiplication, Operators.Division, Operators.Modulo, Operators.Exponentiation
         ];
     }
@@ -52,6 +53,8 @@ namespace Calculator.Contexts
     // Operators
     file record OperatorFunctions
     {
+        public static IValue DoNothing(IValue _, IValue __) => throw new InvalidOperationException("This should not run.");
+
         public static IValue Addition(IValue a, IValue b) => new Number(new Number(a) + new Number(b));
         public static IValue Subtraction(IValue a, IValue b) => new Number(new Number(a) - new Number(b));
         public static IValue Multiplication(IValue a, IValue b) => new Number(new Number(a) * new Number(b));
@@ -62,6 +65,9 @@ namespace Calculator.Contexts
 
     file record Operators
     {
+        public static readonly Operator OpenBracket = new("(", OperatorProperty.Bracket, 0, OperatorFunctions.DoNothing);
+        public static readonly Operator ClosingBracket = new(")", OperatorProperty.Bracket, 127, OperatorFunctions.DoNothing);
+
         public static readonly Operator Addition = new("+", OperatorProperty.Regular, 4, OperatorFunctions.Addition);
         public static readonly Operator Subtraction = new("-", OperatorProperty.Regular, 4, OperatorFunctions.Subtraction);
 
