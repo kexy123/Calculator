@@ -4,12 +4,12 @@ using System.Text.RegularExpressions;
 namespace Calculator.Expression.Token
 {
     [method: SetsRequiredMembers]
-    public class Tokenizer(string source, CalculatorContext context)
+    public class Tokenizer(CalculatorContext context)
     {
-        public required string Source = source;
         public required CalculatorContext Context = context;
         public required TokenPattern[] TokenPatterns = context.Patterns;
 
+        public string Source = "";
         readonly List<Token> TokenList = [];
         public Token[] Tokens => [.. TokenList];
 
@@ -38,10 +38,14 @@ namespace Calculator.Expression.Token
         }
 
         /// <summary>
-        /// Tokenizes the equation.
+        /// Tokenizes the equation for a given source.
         /// </summary>
-        public void Tokenize()
+        /// <param name="source">The source to tokenize.</param>
+        public void Tokenize(string source)
         {
+            Source = source;
+            TokenList.Clear();
+            Index = 0;
             while (Index < Source.Length) NextToken();
         }
 

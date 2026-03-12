@@ -33,5 +33,19 @@ namespace Calculator.Expression
         }
 
         public required TokenPattern[] Patterns = context.TokenPatterns;
+
+        private Tokenizer? tokenizer;
+        public Tokenizer Tokenizer => tokenizer ??= new(this);
+
+        /// <summary>
+        /// Returns the token list from a given expression.
+        /// </summary>
+        /// <param name="expression">The expression to tokenize.</param>
+        /// <returns>The token list as an array.</returns>
+        public Token.Token[] TokenizeExpression(string expression)
+        {
+            Tokenizer.Tokenize(expression);
+            return Tokenizer.Tokens;
+        }
     }
 }

@@ -9,10 +9,8 @@ namespace Calculator
         static void Main(string[] args)
         {
             CalculatorContext context = new(new Arithmetic());
-
-            Tokenizer tokenize = new("5.6 + 28", context);
-            tokenize.Tokenize();
-            Console.WriteLine(tokenize);
+            context.TokenizeExpression("2 + 2 * 2 - 2 / 2");
+            Console.WriteLine(context.Tokenizer);
         }
     }
 }
