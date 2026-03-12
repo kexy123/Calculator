@@ -21,10 +21,11 @@ namespace Calculator.Expression.Token
     }
 
     [method: SetsRequiredMembers]
-    public struct Token(TokenType type, string source)
+    public struct Token(TokenType type, string source, object? value = null)
     {
         public required TokenType Type = type;
         public required string Source = source;
+        public object? Value = value;
 
         public override readonly string ToString() => $"'{Source}'; {Type}";
     }

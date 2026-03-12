@@ -4,11 +4,11 @@ using System.Text.RegularExpressions;
 namespace Calculator.Expression.Token
 {
     [method: SetsRequiredMembers]
-    public class Tokenizer(string source, CalculatorContext context, TokenPattern[] tokenPatterns)
+    public class Tokenizer(string source, CalculatorContext context)
     {
         public required string Source = source;
         public required CalculatorContext Context = context;
-        public required TokenPattern[] TokenPatterns = tokenPatterns;
+        public required TokenPattern[] TokenPatterns = context.Patterns;
 
         readonly List<Token> TokenList = [];
         public Token[] Tokens => [.. TokenList];

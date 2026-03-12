@@ -1,6 +1,6 @@
 ﻿using Calculator.Contexts;
+using Calculator.Expression;
 using Calculator.Expression.Token;
-using Calculator.Value;
 
 namespace Calculator
 {
@@ -8,10 +8,9 @@ namespace Calculator
     {
         static void Main(string[] args)
         {
-            Number a = Convert.ToDouble(Console.ReadLine()), b = Convert.ToDouble(Console.ReadLine());
-            Console.WriteLine(Operators.Exponentiation.Execute(a, b));
+            CalculatorContext context = new(new Arithmetic());
 
-            Tokenizer tokenize = new("5.6 28", new(), TokenPatterns.ExpressionPatterns);
+            Tokenizer tokenize = new("5.6 + 28", context);
             tokenize.Tokenize();
             Console.WriteLine(tokenize);
         }
