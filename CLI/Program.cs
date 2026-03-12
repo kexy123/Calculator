@@ -1,8 +1,7 @@
-﻿using Calculator.Contexts;
-using Calculator.Expression;
-using Calculator.Expression.Token;
+﻿using Core.Contexts;
+using Core.Expression;
 
-namespace Calculator
+namespace CLI
 {
     internal class Program
     {
