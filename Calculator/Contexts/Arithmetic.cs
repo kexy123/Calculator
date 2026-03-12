@@ -22,16 +22,16 @@ namespace Calculator.Contexts
         public static TokenFunction DumpNumber = (tokenizer, match) =>
         {
             string number = match.Value;
-            tokenizer.AddToken(new(TokenType.Number, number));
+            tokenizer.AddToken(new(TokenType.Number, number, Convert.ToDouble(number)));
             tokenizer.Index += number.Length;
         };
         
         public static TokenFunction DumpOperation = (tokenizer, match) =>
         {
             string operation = match.Value;
-            //tokenizer.Context.();
-            tokenizer.AddToken(new(TokenType.Operator, operation));
-            tokenizer.Index += operation.Length;
+            Operator operatorObject = tokenizer.Context.DetermineOperationFromString(operation);
+            tokenizer.AddToken(new(TokenType.Operator, operatorObject.Symbol, operatorObject));
+            tokenizer.Index += operatorObject.Symbol.Length;
         };
 
         public static TokenFunction DumpWhitespace = (tokenizer, match) => tokenizer.Index += match.Value.Length;

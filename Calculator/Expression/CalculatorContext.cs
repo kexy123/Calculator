@@ -1,14 +1,37 @@
-﻿using Calculator.Value;
+﻿using Calculator.Expression.Token;
+using Calculator.Operation;
+using Calculator.Value;
 using Calculator.Variable;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Calculator.Expression
 {
-    public struct CalculatorContext : IVariableContext
+    public interface ICalculatorContext
     {
-        public Dictionary<string, Function> Functions => Functions;
-        public Dictionary<string, IValue> Variables => Variables;
+        public Operator[] Operators { get; }
+        public TokenPattern[] TokenPatterns { get; }
+    }
 
-        public void ImplementFunction(Function function) => Functions.Add(function.Name, function);
-        public void ImplementVariable(string name, IValue value) => Variables.Add(name, value);
+    [method: SetsRequiredMembers]
+    public class CalculatorContext(ICalculatorContext context) : IVariableContext, IOperatorContext
+    {
+        public Dictionary<string, Function> Functions => [];
+        public Dictionary<string, IValue> Variables => [];
+
+        public void AssignFunction(Function function) => Functions.Add(function.Name, function);
+        public void AssignVariable(string name, IValue value) => Variables.Add(name, value);
+
+        public Operator[] Operators => context.Operators;
+
+        public Operator DetermineOperationFromString(string source)
+        {
+            foreach (Operator operatorObject in Operators)
+            {
+                if (source.StartsWith(operatorObject.Symbol)) return operatorObject;
+            }
+            throw new ArgumentException($"No operator matches '{source}'.");
+        }
+
+        public required TokenPattern[] Patterns = context.TokenPatterns;
     }
 }
