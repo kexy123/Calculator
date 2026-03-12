@@ -12,7 +12,8 @@ namespace Calculator.Operation
         Regular = 0,
         RightToLeft = 1,
         Unary = 2,
-        Bracket = 4
+        Bracket = 4,
+        Transitive = 8,
     }
 
     [method: SetsRequiredMembers]
