@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
-namespace Calculator.Expression.Token
+namespace Core.Expression.Token
 {
     [method: SetsRequiredMembers]
     public class Tokenizer(CalculatorContext context)

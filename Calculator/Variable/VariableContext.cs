@@ -1,6 +1,6 @@
-﻿using Calculator.Value;
+﻿using Core.Value;
 
-namespace Calculator.Variable
+namespace Core.Variable
 {
     public interface IVariableContext
     {

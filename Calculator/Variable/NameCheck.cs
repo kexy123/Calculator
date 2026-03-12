@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Calculator.Variable
+namespace Core.Variable
 {
     public static class NameCheck
     {

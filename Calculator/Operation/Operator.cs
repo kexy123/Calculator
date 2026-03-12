@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-using Calculator.Value;
+using Core.Value;
 
-namespace Calculator.Operation
+namespace Core.Operation
 {
     using Form = Func<IValue, IValue, IValue>;
 

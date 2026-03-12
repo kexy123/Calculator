@@ -1,4 +1,4 @@
-﻿namespace Calculator.Value
+﻿namespace Core.Value
 {
     public enum ValueType
     {

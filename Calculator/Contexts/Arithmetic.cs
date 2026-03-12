@@ -1,10 +1,10 @@
-﻿using Calculator.Expression;
-using Calculator.Expression.Token;
-using Calculator.Operation;
-using Calculator.Value;
+﻿using Core.Expression;
+using Core.Expression.Token;
+using Core.Operation;
+using Core.Value;
 using System.Text.RegularExpressions;
 
-namespace Calculator.Contexts
+namespace Core.Contexts
 {
     using TokenFunction = Action<Tokenizer, Match>;
 

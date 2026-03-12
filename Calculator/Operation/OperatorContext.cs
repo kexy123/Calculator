@@ -1,4 +1,4 @@
-﻿namespace Calculator.Operation
+﻿namespace Core.Operation
 {
     public interface IOperatorContext
     {

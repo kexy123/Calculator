@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
-namespace Calculator.Expression.Token
+namespace Core.Expression.Token
 {
     using TokenFunction = Action<Tokenizer, Match>;
 

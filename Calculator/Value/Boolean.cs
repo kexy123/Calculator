@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Calculator.Value
+namespace Core.Value
 {
     [method: SetsRequiredMembers]
     public struct Boolean(bool value, string assignedVariable = "") : IValue

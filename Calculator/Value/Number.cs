@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Calculator.Value
+namespace Core.Value
 {
     [method: SetsRequiredMembers]
     public struct Number(double value, string assignedVariable = "") : IValue

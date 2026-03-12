@@ -1,10 +1,10 @@
-﻿using Calculator.Expression.Token;
-using Calculator.Operation;
-using Calculator.Value;
-using Calculator.Variable;
+﻿using Core.Expression.Token;
+using Core.Operation;
+using Core.Value;
+using Core.Variable;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Calculator.Expression
+namespace Core.Expression
 {
     public interface ICalculatorContext
     {

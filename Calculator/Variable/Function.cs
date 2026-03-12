@@ -1,7 +1,7 @@
-﻿using Calculator.Value;
+﻿using Core.Value;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Calculator.Variable
+namespace Core.Variable
 {
     using Form = Func<IValue[], IValue>;
     using ParameterMap = string[];
