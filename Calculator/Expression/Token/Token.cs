@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Core.Value;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 namespace Core.Expression.Token
@@ -21,11 +22,11 @@ namespace Core.Expression.Token
     }
 
     [method: SetsRequiredMembers]
-    public struct Token(TokenType type, string source, object? value = null)
+    public struct Token(TokenType type, string source, IValue? value = null)
     {
         public required TokenType Type = type;
         public required string Source = source;
-        public object? Value = value;
+        public IValue? Value = value;
 
         public override readonly string ToString() => $"'{Source}'; {Type}";
     }

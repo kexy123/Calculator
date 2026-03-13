@@ -23,7 +23,7 @@ namespace Core.AssetContexts
         public static TokenFunction DumpNumber = (tokenizer, match) =>
         {
             string number = match.Value;
-            tokenizer.AddToken(new(TokenType.Number, number, Convert.ToDouble(number)));
+            tokenizer.AddToken(new(TokenType.Number, number, new Number(Convert.ToDouble(number))));
             tokenizer.Index += number.Length;
         };
         
@@ -31,7 +31,7 @@ namespace Core.AssetContexts
         {
             string operation = match.Value;
             Operator operatorObject = tokenizer.Context.DetermineOperationFromString(operation);
-            tokenizer.AddToken(new(TokenType.Operator, operatorObject.Symbol, operatorObject));
+            tokenizer.AddToken(new(TokenType.Operator, operatorObject.Symbol));
             tokenizer.Index += operatorObject.Symbol.Length;
         };
 
