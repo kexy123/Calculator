@@ -12,6 +12,7 @@ namespace Core.Variable
         Expression
     }
 
+    // TODO: consider overloading functions with different parameter counts.
     public struct Function
     {
         public required string Name;

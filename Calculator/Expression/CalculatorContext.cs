@@ -29,7 +29,7 @@ namespace Core.Expression
             {
                 if (source.StartsWith(operatorObject.Symbol)) return operatorObject;
             }
-            throw new ArgumentException($"No operator matches '{source}'.");
+            throw new ArgumentException($"No operator matches '{source}'");
         }
 
         public required TokenPattern[] Patterns = context.TokenPatterns;

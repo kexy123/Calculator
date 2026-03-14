@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Core.Common;
+using System.Text.RegularExpressions;
 
 namespace Core.Variable
 {
@@ -16,7 +17,7 @@ namespace Core.Variable
 
         public static void ThrowOnInvalidName(string name)
         {
-            if (!IsValidName(name)) throw new ArgumentException($"'{name}' must be a valid variable/function name. It can only contain letters and underscores, and cannot start with an underscore.");
+            if (!IsValidName(name)) throw new InvalidNameException($"'{name}' must be a valid variable/function name. It can only contain letters and underscores, and cannot start with an underscore");
         }
     }
 }

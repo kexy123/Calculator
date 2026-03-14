@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Core.Common;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Core.Value
 {
@@ -19,7 +20,7 @@ namespace Core.Value
         public static implicit operator double(Number number) => number.Value;
 
         [SetsRequiredMembers]
-        public Number(IValue value) : this(value is Number number ? number.Value : throw new ArgumentException(value + " is not a number."), "") { }
+        public Number(IValue value) : this(value is Number number ? number.Value : throw new InvalidValueException(value + " is not a number"), "") { }
 
         public static implicit operator Number(sbyte value) => new(value);
         public static implicit operator Number(byte value) => new(value);

@@ -1,4 +1,6 @@
-﻿namespace Core.Value
+﻿using Core.Common;
+
+namespace Core.Value
 {
     public enum ValueType
     {
@@ -15,6 +17,6 @@
     }
 
     public static class Value {
-        public static Number ToNumber(IValue obj) => obj is Number number ? number : throw new ArgumentException(obj + " is not a Number.");
+        public static Number ToNumber(IValue obj) => obj is Number number ? number : throw new InvalidValueException(obj + " is not a Number");
     }
 }

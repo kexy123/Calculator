@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Core.Common;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Core.Value
 {
@@ -17,7 +18,7 @@ namespace Core.Value
         public static implicit operator bool(Boolean number) => number.Value;
 
         [SetsRequiredMembers]
-        public Boolean(IValue value) : this(value is Boolean boolean ? boolean.Value : throw new ArgumentException(value + " is not a Boolean."), "") { }
+        public Boolean(IValue value) : this(value is Boolean boolean ? boolean.Value : throw new InvalidValueException(value + " is not a Boolean"), "") { }
         [SetsRequiredMembers]
         public Boolean(object value) : this(value is Boolean boolean ? boolean.Value : value != null) { }
     }

@@ -34,7 +34,7 @@ namespace Core.Expression.Token
                 pattern.Execute(this, match);
                 return;
             }
-            throw new InvalidDataException($"Index {Index} of expression '{Source}' cannot be parsed.");
+            throw new InvalidDataException($"Index {Index} of expression '{Source}' cannot be parsed");
         }
 
         /// <summary>
