@@ -53,7 +53,7 @@ namespace Core.AssetContexts
     // Operators
     file record OperatorFunctions
     {
-        public static IValue DoNothing(IValue _, IValue __) => throw new InvalidOperationException("This should not run.");
+        public static IValue DoNothing(IValue _, IValue __) => throw new InvalidOperationException("This should not run");
 
         public static IValue Addition(IValue a, IValue b) => new Number(new Number(a) + new Number(b));
         public static IValue Subtraction(IValue a, IValue b) => new Number(new Number(a) - new Number(b));
@@ -65,16 +65,16 @@ namespace Core.AssetContexts
 
     file record Operators
     {
-        public static readonly Operator OpenBracket = new("(", OperatorProperty.Bracket, 0, OperatorFunctions.DoNothing);
-        public static readonly Operator ClosingBracket = new(")", OperatorProperty.Bracket, 127, OperatorFunctions.DoNothing);
+        public static readonly Operator OpenBracket = new("(", OperatorProperty.OpenBracket, 0, OperatorFunctions.DoNothing);
+        public static readonly Operator ClosingBracket = new(")", OperatorProperty.ClosedBracket, 127, OperatorFunctions.DoNothing);
 
-        public static readonly Operator Addition = new("+", OperatorProperty.Regular, 4, OperatorFunctions.Addition);
-        public static readonly Operator Subtraction = new("-", OperatorProperty.Regular, 4, OperatorFunctions.Subtraction);
+        public static readonly Operator Addition = new("+", OperatorProperty.Regular, 3, OperatorFunctions.Addition);
+        public static readonly Operator Subtraction = new("-", OperatorProperty.Regular, 3, OperatorFunctions.Subtraction);
 
-        public static readonly Operator Multiplication = new("*", OperatorProperty.Regular, 8, OperatorFunctions.Multiplication);
-        public static readonly Operator Division = new("/", OperatorProperty.Regular, 8, OperatorFunctions.Division);
-        public static readonly Operator Modulo = new("%", OperatorProperty.Regular, 8, OperatorFunctions.Modulo);
+        public static readonly Operator Multiplication = new("*", OperatorProperty.Regular, 7, OperatorFunctions.Multiplication);
+        public static readonly Operator Division = new("/", OperatorProperty.Regular, 7, OperatorFunctions.Division);
+        public static readonly Operator Modulo = new("%", OperatorProperty.Regular, 7, OperatorFunctions.Modulo);
 
-        public static readonly Operator Exponentiation = new("^", OperatorProperty.RightToLeft, 16, OperatorFunctions.Exponentiation);
+        public static readonly Operator Exponentiation = new("^", OperatorProperty.RightToLeft, 15, OperatorFunctions.Exponentiation);
     }
 }
