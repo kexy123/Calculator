@@ -1,4 +1,5 @@
-﻿using Core.AssetContexts;
+﻿using CLI.Display;
+using Core.AssetContexts;
 using Core.Expression;
 
 namespace CLI
@@ -8,8 +9,11 @@ namespace CLI
         static void Main(string[] args)
         {
             CalculatorContext context = new(new Arithmetic());
-            context.TokenizeExpression("2 + 2 * 2 - 2 / 2");
-            Console.WriteLine(context.Tokenizer);
+            string? value = Console.ReadLine();
+            context.TokenizeExpression(value!);
+            Console.WriteLine(List.ToString(context.Tokenizer.Tokens));
+            context.Parse(context.Tokenizer.Tokens);
+            Console.WriteLine(List.ToString(context.Parser.Output.ToArray()));
         }
     }
 }

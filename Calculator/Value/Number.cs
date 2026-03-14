@@ -37,6 +37,12 @@ namespace Core.Value
         public static implicit operator Number(double value) => new(value);
         //public static implicit operator Number(decimal value) => new(value);
 
+        public static Number operator +(Number a, Number b) => a.Value + b.Value;
+        public static Number operator -(Number a, Number b) => a.Value - b.Value;
+        public static Number operator *(Number a, Number b) => a.Value * b.Value;
+        public static Number operator /(Number a, Number b) => a.Value / b.Value;
+        public static Number operator %(Number a, Number b) => a.Value % b.Value;
+
         public static implicit operator Number(Boolean value) => new(value == true ? 1 : 0);
     }
 }

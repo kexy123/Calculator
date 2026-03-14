@@ -1,4 +1,5 @@
-﻿using Core.Expression.Token;
+﻿using Core.Expression.Parser;
+using Core.Expression.Token;
 using Core.Operation;
 using Core.Value;
 using Core.Variable;
@@ -10,6 +11,7 @@ namespace Core.Expression
     {
         public Operator[] Operators { get; }
         public TokenPattern[] TokenPatterns { get; }
+        public IParser Parser { get; }
     }
 
     [method: SetsRequiredMembers]
@@ -23,6 +25,12 @@ namespace Core.Expression
 
         public Operator[] Operators => context.Operators;
 
+        /// <summary>
+        /// Determines the first operator that matches the beginning of the specified string.
+        /// </summary>
+        /// <param name="source">The input string to evaluate for a matching operator.</param>
+        /// <returns>The first operator whose symbol matches the start of the input string.</returns>
+        /// <exception cref="ArgumentException">Thrown if no operator matches the beginning of the specified string.</exception>
         public Operator DetermineOperationFromString(string source)
         {
             foreach (Operator operatorObject in Operators)
@@ -35,7 +43,9 @@ namespace Core.Expression
         public required TokenPattern[] Patterns = context.TokenPatterns;
 
         private Tokenizer? tokenizer;
+        private IParser? parser;
         public Tokenizer Tokenizer => tokenizer ??= new(this);
+        public IParser Parser => parser ??= context.Parser;
 
         /// <summary>
         /// Returns the token list from a given expression.
@@ -46,6 +56,17 @@ namespace Core.Expression
         {
             Tokenizer.Tokenize(expression);
             return Tokenizer.Tokens;
+        }
+
+        /// <summary>
+        /// Parses the specified sequence of tokens as an expression and returns the resulting token array.
+        /// </summary>
+        /// <param name="tokens">An array of tokens representing the input expression to parse.</param>
+        /// <returns>An array of tokens representing the parsed expression.</returns>
+        public Token.Token[] Parse(Token.Token[] tokens)
+        {
+            Parser.Parse(tokens, this);
+            return [.. Parser.Output];
         }
     }
 }

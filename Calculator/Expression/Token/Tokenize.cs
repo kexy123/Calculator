@@ -48,18 +48,5 @@ namespace Core.Expression.Token
             Index = 0;
             while (Index < Source.Length) NextToken();
         }
-
-        // TODO: Refactor this into a Console solution.
-        public override string ToString()
-        {
-            string result = "";
-            uint index = 0;
-            foreach (Token token in TokenList)
-            {
-                result += index > 0 ? ", " + token : token;
-                index++;
-            }
-            return result;
-        }
     }
 }

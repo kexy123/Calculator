@@ -1,4 +1,6 @@
-﻿using Core.Expression;
+﻿using Core.AssetParsers;
+using Core.Expression;
+using Core.Expression.Parser;
 using Core.Expression.Token;
 using Core.Operation;
 using Core.Value;
@@ -15,6 +17,7 @@ namespace Core.AssetContexts
             Operators.OpenBracket, Operators.ClosingBracket,
             Operators.Addition, Operators.Subtraction, Operators.Multiplication, Operators.Division, Operators.Modulo, Operators.Exponentiation
         ];
+        IParser ICalculatorContext.Parser => new ArithmeticParser();
     }
 
     // Arithmetic tokens
@@ -55,21 +58,25 @@ namespace Core.AssetContexts
     {
         public static IValue DoNothing(IValue _, IValue __) => throw new InvalidOperationException("This should not run");
 
-        public static IValue Addition(IValue a, IValue b) => new Number(new Number(a) + new Number(b));
-        public static IValue Subtraction(IValue a, IValue b) => new Number(new Number(a) - new Number(b));
-        public static IValue Multiplication(IValue a, IValue b) => new Number(new Number(a) * new Number(b));
-        public static IValue Division(IValue a, IValue b) => new Number(new Number(a) / new Number(b));
-        public static IValue Modulo(IValue a, IValue b) => new Number(new Number(a) % new Number(b));
+        public static IValue UnaryAddition(IValue _, IValue b) => new Number(b);
+        public static IValue Addition(IValue a, IValue b) => new Number(a) + new Number(b);
+        public static IValue UnarySubtraction(IValue _, IValue b) => 0 - new Number(b);
+        public static IValue Subtraction(IValue a, IValue b) => new Number(a) - new Number(b);
+        public static IValue Multiplication(IValue a, IValue b) => new Number(a) * new Number(b);
+        public static IValue Division(IValue a, IValue b) => new Number(a) / new Number(b);
+        public static IValue Modulo(IValue a, IValue b) => new Number(a) % new Number(b);
         public static IValue Exponentiation(IValue a, IValue b) => new Number(Math.Pow(new Number(a), new Number(b)));
     }
 
     file record Operators
     {
-        public static readonly Operator OpenBracket = new("(", OperatorProperty.OpenBracket, 0, OperatorFunctions.DoNothing);
-        public static readonly Operator ClosingBracket = new(")", OperatorProperty.ClosedBracket, 127, OperatorFunctions.DoNothing);
+        public static readonly Operator OpenBracket = new("(", OperatorProperty.Bracket, 0, OperatorFunctions.DoNothing, ClosingBracket);
+        public static readonly Operator ClosingBracket = new(")", OperatorProperty.ClosedBracket, 127, OperatorFunctions.DoNothing, OpenBracket);
 
-        public static readonly Operator Addition = new("+", OperatorProperty.Regular, 3, OperatorFunctions.Addition);
-        public static readonly Operator Subtraction = new("-", OperatorProperty.Regular, 3, OperatorFunctions.Subtraction);
+        public static readonly Operator UnaryAddition = new("+", OperatorProperty.Unary, 3, OperatorFunctions.UnaryAddition);
+        public static readonly Operator Addition = new("+", OperatorProperty.UnaryPotential, 3, OperatorFunctions.Addition, UnaryAddition);
+        public static readonly Operator UnarySubtraction = new("-", OperatorProperty.Unary, 3, OperatorFunctions.UnarySubtraction);
+        public static readonly Operator Subtraction = new("-", OperatorProperty.UnaryPotential, 3, OperatorFunctions.Subtraction, UnarySubtraction);
 
         public static readonly Operator Multiplication = new("*", OperatorProperty.Regular, 7, OperatorFunctions.Multiplication);
         public static readonly Operator Division = new("/", OperatorProperty.Regular, 7, OperatorFunctions.Division);
