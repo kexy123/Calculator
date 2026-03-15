@@ -50,8 +50,12 @@ namespace Core.Operation
         /// <param name="left">The operator on the left to check.</param>
         /// <param name="right">The operator on the right to check.</param>
         /// <returns>true if they have the same symbol, and false if not.</returns>
-        public static bool operator ==(Operator left, Operator right) => left.Symbol == right.Symbol;
-        public static bool operator !=(Operator left, Operator right) => left.Symbol != right.Symbol;
+        public static bool operator ==(Operator? left, Operator? right)
+        {
+            if (left is null || right is null) return false;
+            return left.Symbol == right.Symbol;
+        }
+        public static bool operator !=(Operator? left, Operator? right) => !(left == right);
 
         public static bool operator >(Operator left, Operator right) => left.Precedence > right.Precedence;
         public static bool operator >=(Operator left, Operator right) => left.Precedence >= right.Precedence;
