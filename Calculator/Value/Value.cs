@@ -1,6 +1,4 @@
-﻿using Core.Common;
-
-namespace Core.Value
+﻿namespace Core.Value
 {
     public enum ValueType
     {

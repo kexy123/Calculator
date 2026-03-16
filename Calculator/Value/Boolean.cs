@@ -1,5 +1,4 @@
-﻿using Core.Common;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Core.Value
 {

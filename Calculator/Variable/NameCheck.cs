@@ -1,5 +1,4 @@
-﻿using Core.Common;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace Core.Variable
 {
