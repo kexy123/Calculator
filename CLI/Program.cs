@@ -1,6 +1,7 @@
 ﻿using CLI.Display;
 using Core.AssetContexts;
 using Core.Expression;
+using Core.Value;
 
 namespace CLI
 {
@@ -10,10 +11,8 @@ namespace CLI
         {
             CalculatorContext context = new(new Arithmetic());
             string? value = Console.ReadLine();
-            context.TokenizeExpression(value!);
-            Console.WriteLine(List.ToString(context.Tokenizer.Tokens));
-            context.Parse(context.Tokenizer.Tokens);
-            Console.WriteLine(List.ToString(context.Parser.Output.ToArray()));
+            IValue result = context.Evaluate(value!);
+            Console.WriteLine(result);
         }
     }
 }

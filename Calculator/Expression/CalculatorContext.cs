@@ -68,5 +68,19 @@ namespace Core.Expression
             Parser.Parse(tokens, this);
             return [.. Parser.Output];
         }
+
+        /// <summary>
+        /// Evalutes the given list of tokens.
+        /// </summary>
+        /// <param name="tokens">The tokens to evaluate.</param>
+        /// <returns>The value returned.</returns>
+        public IValue EvaluateTokens(Token.Token[] tokens) => Evaluation.Evaluator.Evaluate(tokens, this);
+
+        /// <summary>
+        /// Evaluates the given expression.
+        /// </summary>
+        /// <param name="expression">The expression to evaluate</param>
+        /// <returns>The value returned.</returns>
+        public IValue Evaluate(string expression) => EvaluateTokens(Parse(TokenizeExpression(expression)));
     }
 }

@@ -15,7 +15,7 @@ namespace Core.AssetContexts
         TokenPattern[] ICalculatorContext.TokenPatterns => TokenPatterns.ExpressionPatterns;
         Operator[] ICalculatorContext.Operators => [
             Operators.OpenBracket, Operators.ClosingBracket,
-            Operators.Addition, Operators.Subtraction, Operators.Multiplication, Operators.Division, Operators.Modulo, Operators.Exponentiation
+            Operators.UnaryAddition, Operators.Addition, Operators.UnarySubtraction, Operators.Subtraction, Operators.Multiplication, Operators.Division, Operators.Modulo, Operators.Exponentiation
         ];
         IParser ICalculatorContext.Parser => new ArithmeticParser();
     }
@@ -73,9 +73,9 @@ namespace Core.AssetContexts
         public static readonly Operator OpenBracket = new("(", OperatorProperty.Bracket, 0, OperatorFunctions.DoNothing, ClosingBracket);
         public static readonly Operator ClosingBracket = new(")", OperatorProperty.ClosedBracket, 0, OperatorFunctions.DoNothing, OpenBracket);
 
-        public static readonly Operator UnaryAddition = new("+", OperatorProperty.Unary, 3, OperatorFunctions.UnaryAddition);
+        public static readonly Operator UnaryAddition = new("1+", OperatorProperty.Unary | OperatorProperty.RightToLeft, 3, OperatorFunctions.UnaryAddition);
         public static readonly Operator Addition = new("+", OperatorProperty.UnaryPotential, 3, OperatorFunctions.Addition, UnaryAddition);
-        public static readonly Operator UnarySubtraction = new("-", OperatorProperty.Unary, 3, OperatorFunctions.UnarySubtraction);
+        public static readonly Operator UnarySubtraction = new("1-", OperatorProperty.Unary | OperatorProperty.RightToLeft, 3, OperatorFunctions.UnarySubtraction);
         public static readonly Operator Subtraction = new("-", OperatorProperty.UnaryPotential, 3, OperatorFunctions.Subtraction, UnarySubtraction);
 
         public static readonly Operator Multiplication = new("*", OperatorProperty.Regular, 7, OperatorFunctions.Multiplication);

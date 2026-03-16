@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Core.AssetContexts;
 using Core.Common;
 using Core.Expression;
 using Core.Expression.Parser;
@@ -87,7 +86,7 @@ namespace Core.AssetParsers
             {
                 if (shuntingStack.Count == 0) break;
                 Operator last = shuntingStack.First();
-                if (last < operatorObject || isRightToLeft && last == operatorObject) break;
+                if (isRightToLeft && last <= operatorObject || last < operatorObject) break;
                 if (last == ending) return;
                 Output.Add(new(TokenType.Operator, shuntingStack.Pop().Symbol));
             }
