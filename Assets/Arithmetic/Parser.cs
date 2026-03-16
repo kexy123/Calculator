@@ -98,15 +98,17 @@ namespace Core.AssetParsers
             Operator operatorObject = calculatorContext.DetermineOperationFromString(token.Source);
             if (operatorObject.ContainsProperty(OperatorProperty.ClosedBracket))
             {
-                if (expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operator, got {operatorObject}");
+                if (expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
                 PopAndPushOperators(operatorObject, operatorObject.Opposite!);
                 shuntingStack.Pop();
                 bracketStack.Pop().TryPushInto(Output);
+                state.Set("Expected", ExpectedForm.Operator | ExpectedForm.Implicit);
                 return;
             }
             if (operatorObject.ContainsProperty(OperatorProperty.Bracket))
             {
-                if (!expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
+                if (expected.HasFlag(ExpectedForm.Implicit)) PushOperator(new(TokenType.Operator, "*"));
+                else if (!expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
                 // TODO: Add function before it to the Bracket Stack if it exists.
                 bracketStack.Push(operatorObject.Opposite!);
                 shuntingStack.Push(operatorObject);
@@ -135,9 +137,15 @@ namespace Core.AssetParsers
         private void PushOperand(Token token)
         {
             ExpectedForm expected = state.Get<ExpectedForm>("Expected");
-            if (!expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {token}");
+            if (!expected.HasFlag(ExpectedForm.Operand) || expected.HasFlag(ExpectedForm.Implicit)) throw new InvalidTokenException($"Expected operand, got {token}");
+            // Why though? Just for nice formatting conventions. TODO: Explain this later.
+            if (expected.HasFlag(ExpectedForm.Implicit))
+            {
+                if (token.Type == TokenType.Number) throw new InvalidTokenException($"Implicit multiplication cannot be applied to {token}");
+                PushOperator(new(TokenType.Operator, "*"));
+            }
             Output.Add(token);
-            state.Set("Expected", ExpectedForm.Operator); // TODO: Implement ExpectedForm.Implicit for numbers and variables.
+            state.Set("Expected", ExpectedForm.Operator | ExpectedForm.Implicit);
         }
 
         public void Parse(in Token[] tokens, CalculatorContext context)
