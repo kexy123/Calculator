@@ -9,11 +9,6 @@ using Core.Variable;
 
 namespace Core.AssetParsers
 {
-    file static class List
-    {
-        public static string ToString<T>(IEnumerable<T> list) => "[" + string.Join(", ", list) + "]";
-    }
-
     [Flags]
     file enum ExpectedForm
     {
