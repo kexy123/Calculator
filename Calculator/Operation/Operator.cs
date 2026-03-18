@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-
+using Core.Expression;
 using Core.Value;
 
 namespace Core.Operation
 {
-    using Form = Func<IValue, IValue, IValue>;
+    using Form = Func<IValue, IValue, CalculatorContext, IValue>;
 
     [Flags]
     public enum OperatorProperty

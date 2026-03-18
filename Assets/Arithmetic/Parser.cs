@@ -58,7 +58,7 @@ namespace Core.AssetParsers
 
     file record StateFields
     {
-        public static State Fields = new(new() {
+        public static State Fields => new(new() {
             { "Expected", ExpectedForm.Operand },
             { "BracketStack", new Stack<BracketEntry>() },
         });
