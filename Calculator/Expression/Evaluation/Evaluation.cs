@@ -25,12 +25,10 @@ namespace Core.Expression.Evaluation
             Operator operatorObject = context.DetermineOperationFromString(token.Source);
             IValue first = outputStack.Pop();
             IValue result;
-            if (operatorObject.ContainsProperty(OperatorProperty.Unary)) result = operatorObject.Execute(new Nothing(), first);
-            else result = operatorObject.Execute(outputStack.Pop(), first);
+            if (operatorObject.ContainsProperty(OperatorProperty.Unary)) result = operatorObject.Execute(new Nothing(), first, context);
+            else result = operatorObject.Execute(outputStack.Pop(), first, context);
             outputStack.Push(result);
         }
-
-        public static string ToString<T>(IEnumerable<T> list) => "[" + string.Join(", ", list) + "]";
 
         /// <summary>
         /// Evaluates the given list of tokens.
