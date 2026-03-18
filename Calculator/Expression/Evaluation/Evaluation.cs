@@ -14,6 +14,9 @@ namespace Core.Expression.Evaluation
                 case Token.TokenType.Number:
                     outputStack.Push(operand.Value!);
                     break;
+                case Token.TokenType.Variable:
+                    outputStack.Push(operand.Value!);
+                    break;
             }
         }
 
@@ -26,6 +29,8 @@ namespace Core.Expression.Evaluation
             else result = operatorObject.Execute(outputStack.Pop(), first);
             outputStack.Push(result);
         }
+
+        public static string ToString<T>(IEnumerable<T> list) => "[" + string.Join(", ", list) + "]";
 
         /// <summary>
         /// Evaluates the given list of tokens.

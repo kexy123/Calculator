@@ -12,6 +12,8 @@ namespace Core.Value
         readonly object IValue.Value => Values;
         readonly string IValue.AssignedVariable => AssignedVariable;
 
+        public void SetAsVariable(string name) => AssignedVariable = name;
+
         /// <summary>
         /// Gets the value in the array from the key.
         /// </summary>

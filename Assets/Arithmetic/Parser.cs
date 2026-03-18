@@ -69,7 +69,7 @@ namespace Core.AssetParsers
         public readonly List<Token> Output = [];
         List<Token> IParser.Output => Output;
 
-        private Stack<Operator> shuntingStack = default!;
+        private readonly Stack<Operator> shuntingStack = [];
         private CalculatorContext calculatorContext = default!;
 
         private State state;
@@ -137,11 +137,11 @@ namespace Core.AssetParsers
         private void PushOperand(Token token)
         {
             ExpectedForm expected = state.Get<ExpectedForm>("Expected");
-            if (!expected.HasFlag(ExpectedForm.Operand) || expected.HasFlag(ExpectedForm.Implicit)) throw new InvalidTokenException($"Expected operand, got {token}");
-            // Why though? Just for nice formatting conventions. TODO: Explain this later.
+            if (!expected.HasFlag(ExpectedForm.Operand) && !expected.HasFlag(ExpectedForm.Implicit)) throw new InvalidTokenException($"Expected operand, got {token}");
             if (expected.HasFlag(ExpectedForm.Implicit))
             {
-                if (token.Type == TokenType.Number) throw new InvalidTokenException($"Implicit multiplication cannot be applied to {token}");
+                //if (token.Type == TokenType.Number) throw new InvalidTokenException($"Implicit multiplication cannot be applied to {token}");
+                // Only implement if implicit numbering is strictly prohibited by other arithmetic interactions.
                 PushOperator(new(TokenType.Operator, "*"));
             }
             Output.Add(token);
@@ -151,12 +151,12 @@ namespace Core.AssetParsers
         public void Parse(in Token[] tokens, CalculatorContext context)
         {
             Output.Clear();
+            shuntingStack.Clear();
 
             state = StateFields.Fields;
             state.Set("Context", context);
 
             calculatorContext = context;
-            shuntingStack = new();
             Stack<BracketEntry> bracketStack = state.Get<Stack<BracketEntry>>("BracketStack");
 
             ExpectedForm expected;

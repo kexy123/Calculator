@@ -12,6 +12,8 @@ namespace Core.Value
         readonly object IValue.Value => Value;
         readonly string IValue.AssignedVariable => AssignedVariable;
 
+        public void SetAsVariable(string name) => AssignedVariable = name;
+
         public readonly override string ToString() => Convert.ToString(Value);
         //public readonly override bool Equals([NotNullWhen(true)] object? obj) => obj is Number number && number.Value == Value;
 

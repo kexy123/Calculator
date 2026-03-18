@@ -29,6 +29,13 @@ namespace Core.AssetContexts
             tokenizer.AddToken(new(TokenType.Number, number, new Number(Convert.ToDouble(number))));
             tokenizer.Index += number.Length;
         };
+
+        public static TokenFunction DumpIdentifier = (tokenizer, match) =>
+        {
+            IValue value = tokenizer.Context.GetVariableFromName(match.Value);
+            tokenizer.AddToken(new(TokenType.Variable, match.Value, value));
+            tokenizer.Index += value.AssignedVariable.Length;
+        };
         
         public static TokenFunction DumpOperation = (tokenizer, match) =>
         {
@@ -45,6 +52,8 @@ namespace Core.AssetContexts
     {
         public static TokenPattern[] ExpressionPatterns = [
             new(@"[\x00-\x1F\x7F\s ]+", Tokens.DumpWhitespace),
+
+            new(@"[a-zA-Z][_a-zA-Z]*", Tokens.DumpIdentifier),
 
             new(@"\d*\.\d*", Tokens.DumpNumber),
             new(@"\d+", Tokens.DumpNumber),

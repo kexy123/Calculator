@@ -17,11 +17,32 @@ namespace Core.Expression
     [method: SetsRequiredMembers]
     public class CalculatorContext(ICalculatorContext context) : IVariableContext, IOperatorContext
     {
-        public Dictionary<string, Function> Functions => [];
-        public Dictionary<string, IValue> Variables => [];
+        private readonly Dictionary<string, Function> functions = [];
+        private readonly Dictionary<string, IValue> variables = [];
+
+        public Dictionary<string, Function> Functions => functions;
+        public Dictionary<string, IValue> Variables => variables;
 
         public void AssignFunction(Function function) => Functions.Add(function.Name, function);
-        public void AssignVariable(string name, IValue value) => Variables.Add(name, value);
+        public void AssignVariable(string name, IValue value)
+        {
+            value.SetAsVariable(name);
+            Variables.Add(name, value);
+        }
+
+        public IValue GetVariableFromName(string name)
+        {
+            string sub = "";
+            int index = 0;
+            IValue? value;
+            do
+            {
+                if (index >= name.Length) return new Nothing(name);
+                sub += name[index];
+                index++;
+            } while (!Variables.TryGetValue(sub, out value));
+            return value;
+        }
 
         public Operator[] Operators => context.Operators;
 
