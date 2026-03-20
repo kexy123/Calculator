@@ -7,6 +7,8 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Core.Expression
 {
+    using FunctionOverloadList = Dictionary<int, Function>;
+
     public interface ICalculatorContext
     {
         public Operator[] Operators { get; }
@@ -17,19 +19,44 @@ namespace Core.Expression
     [method: SetsRequiredMembers]
     public class CalculatorContext(ICalculatorContext context) : IVariableContext, IOperatorContext
     {
-        private readonly Dictionary<string, Function> functions = [];
+        private readonly Dictionary<string, FunctionOverloadList> functions = [];
         private readonly Dictionary<string, IValue> variables = [];
 
-        public Dictionary<string, Function> Functions => functions;
+        public Dictionary<string, FunctionOverloadList> Functions => functions;
         public Dictionary<string, IValue> Variables => variables;
 
-        public void AssignFunction(Function function) => Functions.Add(function.Name, function);
+        public void AssignFunction(Function function)
+        {
+            if (Functions.TryGetValue(function.Name, out FunctionOverloadList? functionDict))
+            {
+                if (!functionDict.TryAdd(function.ParameterCount, function)) functionDict[function.ParameterCount] = function;
+            }
+            else
+            {
+                Functions.Add(function.Name, new() { { 10, function } });
+            }
+        }
         public void AssignVariable(string name, IValue value)
         {
             value.SetAsVariable(name);
             Variables.Add(name, value);
         }
 
+        public FunctionOverloadList? GetFunctionFromName(string name, out string result)
+        {
+            result = "";
+            string sub = "";
+            int index = 0;
+            FunctionOverloadList? value;
+            do
+            {
+                if (index >= name.Length) return null;
+                sub += name[index];
+                index++;
+            } while (!Functions.TryGetValue(sub, out value));
+            result = sub;
+            return value;
+        }
         public IValue GetVariableFromName(string name)
         {
             string sub = "";
@@ -63,39 +90,39 @@ namespace Core.Expression
 
         public required TokenPattern[] Patterns = context.TokenPatterns;
 
-        private Tokenizer? tokenizer;
-        private IParser? parser;
-        public Tokenizer Tokenizer => tokenizer ??= new(this);
-        public IParser Parser => parser ??= context.Parser;
+        public Tokenizer Tokenizer => new(this);
+        public IParser Parser => context.Parser;
 
         /// <summary>
         /// Returns the token list from a given expression.
         /// </summary>
         /// <param name="expression">The expression to tokenize.</param>
-        /// <returns>The token list as an array.</returns>
-        public Token.Token[] TokenizeExpression(string expression)
+        /// <returns>The Tokenizer.</returns>
+        public Tokenizer TokenizeExpression(string expression)
         {
-            Tokenizer.Tokenize(expression);
-            return Tokenizer.Tokens;
+            Tokenizer tokenizer = Tokenizer;
+            tokenizer.Tokenize(expression);
+            return tokenizer;
         }
 
         /// <summary>
         /// Parses the specified sequence of tokens as an expression and returns the resulting token array.
         /// </summary>
-        /// <param name="tokens">An array of tokens representing the input expression to parse.</param>
-        /// <returns>An array of tokens representing the parsed expression.</returns>
-        public Token.Token[] Parse(Token.Token[] tokens)
+        /// <param name="tokenizer">The tokenizer to parse.</param>
+        /// <returns>The Parser.</returns>
+        public IParser Parse(Tokenizer tokenizer)
         {
-            Parser.Parse(tokens, this);
-            return [.. Parser.Output];
+            IParser parser = Parser;
+            parser.Parse(tokenizer.Tokens, this);
+            return parser;
         }
 
         /// <summary>
         /// Evalutes the given list of tokens.
         /// </summary>
-        /// <param name="tokens">The tokens to evaluate.</param>
+        /// <param name="parser">The parser to go over.</param>
         /// <returns>The value returned.</returns>
-        public IValue EvaluateTokens(Token.Token[] tokens) => Evaluation.Evaluator.Evaluate(tokens, this);
+        public IValue EvaluateTokens(IParser parser) => Evaluation.Evaluator.Evaluate([.. parser.Output], this);
 
         /// <summary>
         /// Evaluates the given expression.
