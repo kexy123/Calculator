@@ -5,6 +5,7 @@
         Number,
         Variable,
         Array,
+        Function,
         Expression,
     }
 
@@ -21,6 +22,6 @@
     }
 
     public static class Value {
-        public static Number ToNumber(IValue obj) => obj is Number number ? number : throw new InvalidValueException(obj + " is not a Number");
+        public static NumberToken ToNumber(IValue obj) => obj is NumberToken number ? number : throw new InvalidValueException(obj + " is not a Number");
     }
 }

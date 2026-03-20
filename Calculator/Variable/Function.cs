@@ -42,7 +42,7 @@ namespace Core.Variable
         /// <summary>
         /// Creates a function with the given name, expression and parameter map.
         /// The expression should be in terms of the parameters defined in the parameter map.
-        /// For example, if the parameter map is { "x": "Number", "y": "Number" }, then the expression could be "x + y" where the function is "f(x, y)".
+        /// For example, if the parameter map is [ "x", "y" ], then the expression could be "x + y" where the function is "f(x, y)".
         /// </summary>
         /// <param name="name">The name of the function.</param>
         /// <param name="expression">The mathematical expression in terms of the parameter map.</param>

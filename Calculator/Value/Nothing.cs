@@ -3,7 +3,7 @@
 namespace Core.Value
 {
     [method: SetsRequiredMembers]
-    public struct Nothing(string assignedVariable = "") : IValue
+    public struct NothingToken(string assignedVariable = "") : IValue
     {
         public string AssignedVariable = assignedVariable;
 

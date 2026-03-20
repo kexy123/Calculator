@@ -3,7 +3,7 @@
 namespace Core.Value
 {
     [method: SetsRequiredMembers]
-    public struct Array(IValue[] values, string assignedVariable = "") : IValue
+    public struct ArrayToken(IValue[] values, string assignedVariable = "") : IValue
     {
         public required IValue[] Values = values;
         public required string AssignedVariable = assignedVariable;
@@ -23,6 +23,6 @@ namespace Core.Value
         public readonly override string ToString() => string.Join(", ", Values);
 
         [SetsRequiredMembers]
-        public Array(IValue value, string assignedVariable = "") : this([value], assignedVariable) { }
+        public ArrayToken(IValue value, string assignedVariable = "") : this([value], assignedVariable) { }
     }
 }

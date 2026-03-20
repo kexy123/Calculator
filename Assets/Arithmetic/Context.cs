@@ -29,7 +29,7 @@ namespace Core.AssetContexts
         public static TokenFunction DumpNumber = (tokenizer, match) =>
         {
             string number = match.Value;
-            tokenizer.AddToken(new(TokenType.Number, number, new Number(Convert.ToDouble(number))));
+            tokenizer.AddToken(new(TokenType.Number, number, new NumberToken(Convert.ToDouble(number))));
             tokenizer.Index += number.Length;
         };
 
@@ -87,14 +87,14 @@ namespace Core.AssetContexts
             return b;
         }
 
-        public static IValue UnaryAddition(IValue _, IValue b, CalculatorContext __) => new Number(b);
-        public static IValue Addition(IValue a, IValue b, CalculatorContext _) => new Number(a) + new Number(b);
-        public static IValue UnarySubtraction(IValue _, IValue b, CalculatorContext __) => 0 - new Number(b);
-        public static IValue Subtraction(IValue a, IValue b, CalculatorContext _) => new Number(a) - new Number(b);
-        public static IValue Multiplication(IValue a, IValue b, CalculatorContext _) => new Number(a) * new Number(b);
-        public static IValue Division(IValue a, IValue b, CalculatorContext _) => new Number(a) / new Number(b);
-        public static IValue Modulo(IValue a, IValue b, CalculatorContext _) => new Number(a) % new Number(b);
-        public static IValue Exponentiation(IValue a, IValue b, CalculatorContext _) => new Number(Math.Pow(new Number(a), new Number(b)));
+        public static IValue UnaryAddition(IValue _, IValue b, CalculatorContext __) => new NumberToken(b);
+        public static IValue Addition(IValue a, IValue b, CalculatorContext _) => new NumberToken(a) + new NumberToken(b);
+        public static IValue UnarySubtraction(IValue _, IValue b, CalculatorContext __) => 0 - new NumberToken(b);
+        public static IValue Subtraction(IValue a, IValue b, CalculatorContext _) => new NumberToken(a) - new NumberToken(b);
+        public static IValue Multiplication(IValue a, IValue b, CalculatorContext _) => new NumberToken(a) * new NumberToken(b);
+        public static IValue Division(IValue a, IValue b, CalculatorContext _) => new NumberToken(a) / new NumberToken(b);
+        public static IValue Modulo(IValue a, IValue b, CalculatorContext _) => new NumberToken(a) % new NumberToken(b);
+        public static IValue Exponentiation(IValue a, IValue b, CalculatorContext _) => new NumberToken(Math.Pow(new NumberToken(a), new NumberToken(b)));
     }
 
     file record Operators

@@ -64,7 +64,7 @@ namespace Core.Expression
             IValue? value;
             do
             {
-                if (index >= name.Length) return new Nothing(name);
+                if (index >= name.Length) return new NothingToken(name);
                 sub += name[index];
                 index++;
             } while (!Variables.TryGetValue(sub, out value));

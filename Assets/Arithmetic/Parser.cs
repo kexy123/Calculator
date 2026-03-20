@@ -50,7 +50,7 @@ namespace Core.AssetParsers
         public void TryPushInto(List<Token> output)
         {
             TryInvalid();
-            if (AppliedFunction is Function function) output.Add(new(TokenType.Function, function.Name, new Number(function.ParameterCount)));
+            if (AppliedFunction is Function function) output.Add(new(TokenType.Function, function.Name, new NumberToken(function.ParameterCount)));
         }
 
         public static implicit operator BracketEntry(Operator closingBracket) => new(closingBracket);

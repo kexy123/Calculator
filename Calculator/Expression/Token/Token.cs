@@ -21,7 +21,7 @@ namespace Core.Expression.Token
         Variable = 5,
 
         Operator = 8,
-        Function = 16,
+        Function = 17,
 
         Whitespace = 32,
     }

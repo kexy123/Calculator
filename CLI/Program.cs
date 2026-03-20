@@ -10,8 +10,8 @@ namespace CLI
         static void Main(string[] args)
         {
             CalculatorContext context = new(new Arithmetic());
-            context.AssignVariable("pi", new Number(Math.PI));
-            context.AssignVariable("e", new Number(Math.E));
+            context.AssignVariable("pi", new NumberToken(Math.PI));
+            context.AssignVariable("e", new NumberToken(Math.E));
 
             context.AssignFunction(new("foo", "a+b", ["a", "b"]));
 

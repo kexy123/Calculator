@@ -25,7 +25,7 @@ namespace Core.Expression.Evaluation
             Operator operatorObject = context.DetermineOperationFromString(token.Source);
             IValue first = outputStack.Pop();
             IValue result;
-            if (operatorObject.ContainsProperty(OperatorProperty.Unary)) result = operatorObject.Execute(new Nothing(), first, context);
+            if (operatorObject.ContainsProperty(OperatorProperty.Unary)) result = operatorObject.Execute(new NothingToken(), first, context);
             else result = operatorObject.Execute(outputStack.Pop(), first, context);
             outputStack.Push(result);
         }
