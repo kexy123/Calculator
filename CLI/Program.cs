@@ -26,8 +26,15 @@ namespace CLI
                 //Console.WriteLine(List.ToString(tokens));
                 //IValue result = context.EvaluateTokens(tokens);
 
-                IValue result = context.Evaluate(value);
-                Console.WriteLine(result);
+                try
+                {
+                    IValue result = context.Evaluate(value);
+                    Console.WriteLine(result);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
     }

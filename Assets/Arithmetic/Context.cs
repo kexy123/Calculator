@@ -1,4 +1,5 @@
 ﻿using Core.AssetParsers;
+using Core.Common;
 using Core.Expression;
 using Core.Expression.Parser;
 using Core.Expression.Token;
@@ -70,7 +71,9 @@ namespace Core.AssetContexts
 
         public static IValue Assign(IValue a, IValue b, CalculatorContext c)
         {
-            c.AssignVariable(a.AssignedVariable, b);
+            string name = a.AssignedVariable;
+            if (name == "") throw new InvalidValueException(a + " is not a variable name");
+            c.AssignVariable(name, b);
             return b;
         }
 
