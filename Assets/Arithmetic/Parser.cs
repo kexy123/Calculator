@@ -39,7 +39,7 @@ namespace Core.AssetParsers
                 throw new MathArgumentException("Expected 1 parameter in bracket, got " + Parameters);
             }
 
-            uint count = AppliedFunction!.Value.ParameterCount;
+            int count = AppliedFunction!.Value.ParameterCount;
             if (Parameters != count) throw new MathArgumentException($"Expected {count} parameter(s) in function, got {Parameters}");
         }
 

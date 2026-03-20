@@ -2,9 +2,11 @@
 
 namespace Core.Variable
 {
+    using FunctionOverloadList = Dictionary<int, Function>;
+
     public interface IVariableContext
     {
-        public Dictionary<string, Function> Functions { get; }
+        public Dictionary<string, FunctionOverloadList> Functions { get; }
         public Dictionary<string, IValue> Variables { get; }
 
         /// <summary>
@@ -26,5 +28,13 @@ namespace Core.Variable
         /// <param name="name">The string sequence to get the variable from.</param>
         /// <returns>The IValue tied to the variable name.</returns>
         public IValue GetVariableFromName(string name);
+
+        /// <summary>
+        /// Attempts to get the overload list of functions given the string sequence.
+        /// </summary>
+        /// <param name="name">The string sequence to get the function from.</param>
+        /// <param name="result">The string sequence that was successfully matched to a function name.</param>
+        /// <returns>The function overload list tied to the function name.</returns>
+        public FunctionOverloadList? GetFunctionFromName(string name, out string result);
     }
 }

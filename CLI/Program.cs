@@ -1,7 +1,6 @@
 ﻿using CLI.Display;
 using Core.AssetContexts;
 using Core.Expression;
-using Core.Expression.Token;
 using Core.Value;
 
 namespace CLI
@@ -13,6 +12,8 @@ namespace CLI
             CalculatorContext context = new(new Arithmetic());
             context.AssignVariable("pi", new Number(Math.PI));
             context.AssignVariable("e", new Number(Math.E));
+
+            context.AssignFunction(new("foo", "a+b", ["a", "b"]));
 
             while (true)
             {

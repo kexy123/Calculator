@@ -5,6 +5,7 @@ using Core.Expression.Parser;
 using Core.Expression.Token;
 using Core.Operation;
 using Core.Value;
+using Core.Variable;
 using System.Text.RegularExpressions;
 
 namespace Core.AssetContexts
@@ -34,9 +35,18 @@ namespace Core.AssetContexts
 
         public static TokenFunction DumpIdentifier = (tokenizer, match) =>
         {
-            IValue value = tokenizer.Context.GetVariableFromName(match.Value);
-            tokenizer.AddToken(new(TokenType.Variable, match.Value, value));
-            tokenizer.Index += value.AssignedVariable.Length;
+            tokenizer.Context.GetFunctionFromName(match.Value, out string result);
+            if (result != "")
+            {
+                tokenizer.AddToken(new(TokenType.Function, result));
+                tokenizer.Index += result.Length;
+            }
+            else
+            {
+                IValue value = tokenizer.Context.GetVariableFromName(match.Value);
+                tokenizer.AddToken(new(TokenType.Variable, match.Value, value));
+                tokenizer.Index += value.AssignedVariable.Length;
+            }
         };
         
         public static TokenFunction DumpOperation = (tokenizer, match) =>

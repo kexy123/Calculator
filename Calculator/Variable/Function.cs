@@ -22,7 +22,7 @@ namespace Core.Variable
         public string? Expression;
 
         public ParameterMap? ParameterMap;
-        public uint ParameterCount;
+        public int ParameterCount;
 
         /// <summary>
         /// Creates a function with the given name, C# function and parameter count.
@@ -31,7 +31,7 @@ namespace Core.Variable
         /// <param name="function">The C# function to embed.</param>
         /// <param name="parameters">The number of parameters the function has in order.</param>
         [SetsRequiredMembers]
-        public Function(string name, Form function, uint parameters)
+        public Function(string name, Form function, int parameters)
         {
             Name = name;
             Execute = function;
@@ -53,7 +53,7 @@ namespace Core.Variable
             Name = name;
             Expression = expression;
             ParameterMap = parameterMap;
-            ParameterCount = (uint)parameterMap.Length;
+            ParameterCount = parameterMap.Length;
             Type = FunctionType.Expression;
         }
 
