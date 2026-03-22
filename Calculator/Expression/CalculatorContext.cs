@@ -39,7 +39,7 @@ namespace Core.Expression
         public void AssignVariable(string name, IValue value)
         {
             value.SetAsVariable(name);
-            Variables.Add(name, value);
+            if (!Variables.TryAdd(name, value)) Variables[name] = value;
         }
 
         public FunctionOverloadList? GetFunctionFromName(string name, out string result)
@@ -60,6 +60,7 @@ namespace Core.Expression
         public Function GetFunction(FunctionOverloadList overloads, int args)
         {
             if (overloads.TryGetValue(args, out Function function)) return function;
+            else if (overloads.TryGetValue(-1, out Function defaultFunction)) return new Function(defaultFunction, args);
             else throw new MathArgumentException($"Function doesn't accept {args} parameter(s)");
         }
         public IValue GetVariableFromName(string name)

@@ -1,5 +1,6 @@
 ﻿using Core.Operation;
 using Core.Value;
+using Core.Variable;
 
 namespace Core.Expression.Evaluation
 {
@@ -30,6 +31,19 @@ namespace Core.Expression.Evaluation
             outputStack.Push(result);
         }
 
+        private static void PerformFunction(Token.Token token, ValueStack outputStack, CalculatorContext context)
+        {
+            if (token.Value is FunctionToken functionObject)
+            {
+                Function func = functionObject.Value;
+                List<IValue> arguments = [];
+                for (int i = 0; i < func.ParameterCount; i++) arguments.Add(outputStack.Pop());
+                arguments.Reverse();
+                IValue result = func.Invoke(context, [.. arguments]);
+                outputStack.Push(result);
+            }
+        }
+
         /// <summary>
         /// Evaluates the given list of tokens.
         /// </summary>
@@ -43,7 +57,8 @@ namespace Core.Expression.Evaluation
 
             foreach (Token.Token token in tokens)
             {
-                if (token.ContainsProperty(Token.TokenType.Operand)) PushOperand(token, outputStack);
+                if (token.ContainsProperty(Token.TokenType.Function)) PerformFunction(token, outputStack, context);
+                else if (token.ContainsProperty(Token.TokenType.Operand)) PushOperand(token, outputStack);
                 else if (token.ContainsProperty(Token.TokenType.Operator)) PerformOperator(token, outputStack, context);
                 else throw new InvalidTokenException($"Invalid token {token}");
             }

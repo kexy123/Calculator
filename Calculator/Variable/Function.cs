@@ -1,5 +1,8 @@
-﻿using Core.Value;
+﻿using Core.Expression;
+using Core.Value;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
+using System.Xml.Linq;
 
 namespace Core.Variable
 {
@@ -23,6 +26,29 @@ namespace Core.Variable
 
         public ParameterMap? ParameterMap;
         public int ParameterCount;
+
+        /// <summary>
+        /// Invokes the function with the given arguments. If the function is a C# function, it will execute the C# function. If the function is an expression, it will evaluate the expression in a new context with the parameters assigned to the arguments.
+        /// </summary>
+        /// <param name="context">The CalculatorContext.</param>
+        /// <param name="arguments">The argument list.</param>
+        /// <returns>The function's result.</returns>
+        public readonly IValue Invoke(CalculatorContext context, IValue[] arguments)
+        {
+            if (Type == FunctionType.CSharpFunction) return Execute!(arguments);
+            else
+            {
+                //if (Expression is null || ParameterMap is null) throw new InvalidOperationException("Expression or parameter map is not defined.");
+                //// Create a new context for evaluating the expression, with the parameters assigned to the arguments.
+                //var expressionContext = new CalculatorContext();
+                //for (int i = 0; i < ParameterCount; i++)
+                //{
+                //    expressionContext.AssignVariable(ParameterMap[i], arguments[i]);
+                //}
+                //return expressionContext.Evaluate(Expression);
+                throw new NotImplementedException("Whatever bruh");
+            }
+        }
 
         /// <summary>
         /// Creates a function with the given name, C# function and parameter count.
@@ -57,6 +83,22 @@ namespace Core.Variable
             Type = FunctionType.Expression;
         }
 
-        public readonly override string ToString() => $"Function('{Name}')"; // TODO: improve this to include parameters and expression if applicable.
+        /// <summary>
+        /// Creates a function based on another function, but with a different parameter count. This is used for default functions, where the default function has a parameter map that accepts any number of parameters, and the new function has a parameter map that accepts a specific number of parameters. The expression of the new function is the same as the default function, but with the parameters in the parameter map replaced by the corresponding arguments in the new parameter map.
+        /// </summary>
+        /// <param name="function">The function to be based on.</param>
+        /// <param name="parameters">The new parameter count.</param>
+        [SetsRequiredMembers]
+        public Function(Function function, int parameters)
+        {
+            Name = function.Name;
+            Type = function.Type;
+            Execute = function.Execute;
+            Expression = function.Expression;
+            ParameterMap = function.ParameterMap;
+            ParameterCount = parameters;
+        }
+
+        public readonly override string ToString() => $"{Name}(... {ParameterCount})"; // TODO: improve this to include expression if applicable.
     }
 }

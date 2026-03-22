@@ -111,7 +111,7 @@ namespace Core.AssetParsers
             {
                 if (expected.HasFlag(ExpectedForm.Implicit)) PushOperator(new(TokenType.Operator, "*"));
                 else if (!expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
-                bracketStack.Push(new(operatorObject.Opposite!, state.Get<string>("PotentialFunction")));
+                bracketStack.Push(new(operatorObject.Opposite!, state.Get<string?>("PotentialFunction", null)));
                 shuntingStack.Push(operatorObject);
                 state.Set("Expected", ExpectedForm.Operand | ExpectedForm.Parameter);
                 return;
