@@ -21,7 +21,9 @@ namespace Core.Operation
         Bracket = 32,
         ClosedBracket = 96,
 
-        Separator = 128,
+        Ignore = 128,
+
+        Separator = 256,
     }
 
     [method: SetsRequiredMembers]

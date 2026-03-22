@@ -133,7 +133,7 @@ namespace Core.AssetParsers
             if (operatorObject.ContainsProperty(OperatorProperty.Separator))
             {
                 if (expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
-                PopAndPushOperators(operatorObject, bracketStack.First().ClosingBracket.Opposite!);
+                PopAndPushOperators(operatorObject, bracketStack.First().ClosingBracket!.Opposite!);
                 state.Set("Expected", ExpectedForm.Operand | ExpectedForm.Parameter);
                 return;
             }
@@ -152,7 +152,7 @@ namespace Core.AssetParsers
                 if (expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
                 PopAndPushOperators(operatorObject);
             }
-            shuntingStack.Push(operatorObject);
+            if (!operatorObject.ContainsProperty(OperatorProperty.Ignore)) shuntingStack.Push(operatorObject);
             state.Set("Expected", newExpected);
         }
 

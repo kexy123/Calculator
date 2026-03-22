@@ -18,6 +18,7 @@ namespace Core.AssetContexts
             Operators.OpenBracket, Operators.ClosingBracket,
             Operators.Comma,
             Operators.Assign,
+            Operators.IsEqualTo,
             Operators.UnaryAddition, Operators.Addition, Operators.UnarySubtraction, Operators.Subtraction, Operators.Multiplication, Operators.Division, Operators.Modulo, Operators.Exponentiation
         ];
         IParser ICalculatorContext.Parser => new ArithmeticParser();
@@ -87,6 +88,18 @@ namespace Core.AssetContexts
             return b;
         }
 
+        public static IValue IsEqualTo(IValue a, IValue b, CalculatorContext c)
+        {
+            if (a is NothingToken)
+            {
+                string name = a.AssignedVariable;
+                if (name == "") throw new InvalidValueException(a + " is not a variable name");
+                c.AssignVariable(name, b);
+                return new BooleanToken(true);
+            }
+            return new BooleanToken(a.Value == b.Value);
+        }
+
         public static IValue UnaryAddition(IValue _, IValue b, CalculatorContext __) => new NumberToken(b);
         public static IValue Addition(IValue a, IValue b, CalculatorContext _) => new NumberToken(a) + new NumberToken(b);
         public static IValue UnarySubtraction(IValue _, IValue b, CalculatorContext __) => 0 - new NumberToken(b);
@@ -103,20 +116,24 @@ namespace Core.AssetContexts
         public static readonly Operator ClosingBracket = new(")", OperatorProperty.ClosedBracket, 0, OperatorFunctions.DoNothing);
         public static readonly Operator Comma = new(",", OperatorProperty.Separator, 0, OperatorFunctions.DoNothing);
 
+        //public static readonly Operator Colon = new(":", OperatorProperty.Separator, 0, OperatorFunctions.DoNothing);
+
         public static readonly Operator Assign = new("->", OperatorProperty.Regular, 1, OperatorFunctions.Assign);
 
+        public static readonly Operator IsEqualTo = new("=", OperatorProperty.Transitive, 3, OperatorFunctions.IsEqualTo);
 
 
-        public static readonly Operator UnaryAddition = new("1+", OperatorProperty.Unary | OperatorProperty.RightToLeft, 3, OperatorFunctions.UnaryAddition);
-        public static readonly Operator Addition = new("+", OperatorProperty.UnaryPotential, 3, OperatorFunctions.Addition, UnaryAddition);
-        public static readonly Operator UnarySubtraction = new("1-", OperatorProperty.Unary | OperatorProperty.RightToLeft, 3, OperatorFunctions.UnarySubtraction);
-        public static readonly Operator Subtraction = new("-", OperatorProperty.UnaryPotential, 3, OperatorFunctions.Subtraction, UnarySubtraction);
 
-        public static readonly Operator Multiplication = new("*", OperatorProperty.Regular, 7, OperatorFunctions.Multiplication);
-        public static readonly Operator Division = new("/", OperatorProperty.Regular, 7, OperatorFunctions.Division);
-        public static readonly Operator Modulo = new("%", OperatorProperty.Regular, 7, OperatorFunctions.Modulo);
+        public static readonly Operator UnaryAddition = new("u+", OperatorProperty.Unary | OperatorProperty.RightToLeft | OperatorProperty.Ignore, 7, OperatorFunctions.UnaryAddition);
+        public static readonly Operator Addition = new("+", OperatorProperty.UnaryPotential, 7, OperatorFunctions.Addition, UnaryAddition);
+        public static readonly Operator UnarySubtraction = new("u-", OperatorProperty.Unary | OperatorProperty.RightToLeft, 7, OperatorFunctions.UnarySubtraction);
+        public static readonly Operator Subtraction = new("-", OperatorProperty.UnaryPotential, 7, OperatorFunctions.Subtraction, UnarySubtraction);
 
-        public static readonly Operator Exponentiation = new("^", OperatorProperty.RightToLeft, 15, OperatorFunctions.Exponentiation);
+        public static readonly Operator Multiplication = new("*", OperatorProperty.Regular, 15, OperatorFunctions.Multiplication);
+        public static readonly Operator Division = new("/", OperatorProperty.Regular, 15, OperatorFunctions.Division);
+        public static readonly Operator Modulo = new("%", OperatorProperty.Regular, 15, OperatorFunctions.Modulo);
+
+        public static readonly Operator Exponentiation = new("^", OperatorProperty.RightToLeft, 31, OperatorFunctions.Exponentiation);
 
         static Operators()
         {

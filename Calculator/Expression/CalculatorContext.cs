@@ -38,9 +38,12 @@ namespace Core.Expression
                 Functions.Add(function.Name, new() { { function.ParameterCount, function } });
             }
         }
-        public void AssignVariable(string name, IValue value)
+        public void AssignVariable(string name, IValue value, bool updateValue = true)
         {
-            value.SetAsVariable(name);
+            if (updateValue)
+            {
+                value.SetAsVariable(name);
+            }
             if (!Variables.TryAdd(name, value)) Variables[name] = value;
         }
 
@@ -150,7 +153,7 @@ namespace Core.Expression
             //FunctionsList outScopeFunctions = new(functions);
             VariableList outScopeVariables = new(variables);
 
-            foreach (KeyValuePair<string, IValue> parameter in parameterMap) AssignVariable(parameter.Key, parameter.Value);
+            foreach (KeyValuePair<string, IValue> parameter in parameterMap) AssignVariable(parameter.Key, parameter.Value, false);
 
             IValue result = EvaluateTokens(Parse(TokenizeExpression(expression)));
 

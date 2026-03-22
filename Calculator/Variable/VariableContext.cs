@@ -20,7 +20,8 @@ namespace Core.Variable
         /// </summary>
         /// <param name="name">The name of the variable.</param>
         /// <param name="value">The variable's value to implement.</param>
-        public void AssignVariable(string name, IValue value);
+        /// <param name="updateValue">A boolean that determines if the IValue itself should be updated.</param>
+        public void AssignVariable(string name, IValue value, bool updateValue);
 
         /// <summary>
         /// Attempts to get the variable given the string sequence.

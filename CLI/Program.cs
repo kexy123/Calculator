@@ -7,19 +7,6 @@ using Core.Value;
 
 namespace CLI
 {
-    file record A
-    {
-        public static IValue Prod(IValue[] values)
-        {
-            NumberToken sum = new(1);
-            foreach (IValue value in values)
-            {
-                sum *= (NumberToken)value;
-            }
-            return sum;
-        }
-    }
-
     internal class Program
     {
         static void Main(string[] args)
@@ -28,8 +15,7 @@ namespace CLI
             context.AssignVariable("pi", new NumberToken(Math.PI));
             context.AssignVariable("e", new NumberToken(Math.E));
 
-            context.AssignFunction(new("prod", A.Prod, -1));
-            context.AssignFunction(new("sqrt", "n^(1/2)", ["n"]));
+            context.AssignFunction(new("sqrt", "n^0.5", ["n"]));
 
             while (true)
             {
