@@ -23,22 +23,22 @@ namespace CLI
                 string? value = Console.ReadLine();
                 if (value is null || value == "") return;
 
-                Tokenizer tokens = context.TokenizeExpression(value);
-                Console.WriteLine(List.ToString(tokens.Tokens));
-                IParser parser = context.Parse(tokens);
-                Console.WriteLine(List.ToString(parser.Output));
-                IValue result = context.EvaluateTokens(parser);
-                Console.WriteLine(result);
+                //Tokenizer tokens = context.TokenizeExpression(value);
+                //Console.WriteLine(List.ToString(tokens.Tokens));
+                //IParser parser = context.Parse(tokens);
+                //Console.WriteLine(List.ToString(parser.Output));
+                //IValue result = context.EvaluateTokens(parser);
+                //Console.WriteLine(result);
 
-                //try
-                //{
-                //    IValue result = context.Evaluate(value);
-                //    Console.WriteLine(result);
-                //}
-                //catch (Exception ex)
-                //{
-                //    Console.WriteLine(ex.Message);
-                //}
+                try
+                {
+                    IValue result = context.Evaluate(value);
+                    Console.WriteLine(result);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
     }

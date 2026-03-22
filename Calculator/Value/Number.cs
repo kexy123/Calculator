@@ -15,7 +15,7 @@ namespace Core.Value
         public void SetAsVariable(string name) => AssignedVariable = name;
 
         public readonly override string ToString() => Convert.ToString(Value);
-        //public readonly override bool Equals([NotNullWhen(true)] object? obj) => obj is Number number && number.Value == Value;
+        //public readonly override bool Equals(object? obj) => obj is NumberToken number && number.Value == Value;
 
         //public static implicit operator decimal(Number number) => number.Value;
         public static implicit operator double(NumberToken number) => number.Value;

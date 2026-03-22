@@ -97,7 +97,7 @@ namespace Core.AssetContexts
                 c.AssignVariable(name, b);
                 return new BooleanToken(true);
             }
-            return new BooleanToken(a.Value == b.Value);
+            return new BooleanToken(object.Equals(a.Value, b.Value));
         }
 
         public static IValue UnaryAddition(IValue _, IValue b, CalculatorContext __) => new NumberToken(b);
