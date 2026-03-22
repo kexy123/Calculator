@@ -8,6 +8,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace Core.Expression
 {
     using FunctionOverloadList = Dictionary<int, Function>;
+    using VariableList = Dictionary<string, IValue>;
+    using FunctionsList = Dictionary<string, Dictionary<int, Function>>;
 
     public interface ICalculatorContext
     {
@@ -19,11 +21,11 @@ namespace Core.Expression
     [method: SetsRequiredMembers]
     public class CalculatorContext(ICalculatorContext context) : IVariableContext, IOperatorContext
     {
-        private readonly Dictionary<string, FunctionOverloadList> functions = [];
-        private readonly Dictionary<string, IValue> variables = [];
+        private FunctionsList functions = [];
+        private VariableList variables = [];
 
-        public Dictionary<string, FunctionOverloadList> Functions => functions;
-        public Dictionary<string, IValue> Variables => variables;
+        public FunctionsList Functions => functions;
+        public VariableList Variables => variables;
 
         public void AssignFunction(Function function)
         {
@@ -133,8 +135,29 @@ namespace Core.Expression
         /// <summary>
         /// Evaluates the given expression.
         /// </summary>
-        /// <param name="expression">The expression to evaluate</param>
+        /// <param name="expression">The expression to evaluate.</param>
         /// <returns>The value returned.</returns>
         public IValue Evaluate(string expression) => EvaluateTokens(Parse(TokenizeExpression(expression)));
+
+        /// <summary>
+        /// Evaluates the given expression with the given parameter map under the scope.
+        /// </summary>
+        /// <param name="expression">The expression to evaluate.</param>
+        /// <param name="parameterMap">The parameter map.</param>
+        /// <returns>The value returned.</returns>
+        public IValue EvaluateUnderScope(string expression, VariableList parameterMap)
+        {
+            FunctionsList outScopeFunctions = new(functions);
+            VariableList outScopeVariables = new(variables);
+
+
+
+            IValue result = EvaluateTokens(Parse(TokenizeExpression(expression)));
+
+            functions = outScopeFunctions;
+            variables = outScopeVariables;
+
+            return result;
+        }
     }
 }

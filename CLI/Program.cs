@@ -29,6 +29,7 @@ namespace CLI
             context.AssignVariable("e", new NumberToken(Math.E));
 
             context.AssignFunction(new("prod", A.Prod, -1));
+            context.AssignFunction(new("prod", A.Prod, -1));
 
             while (true)
             {
