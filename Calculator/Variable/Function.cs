@@ -1,8 +1,6 @@
 ﻿using Core.Expression;
 using Core.Value;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
-using System.Xml.Linq;
 
 namespace Core.Variable
 {
@@ -36,18 +34,10 @@ namespace Core.Variable
         public readonly IValue Invoke(CalculatorContext context, IValue[] arguments)
         {
             if (Type == FunctionType.CSharpFunction) return Execute!(arguments);
-            else
-            {
-                //if (Expression is null || ParameterMap is null) throw new InvalidOperationException("Expression or parameter map is not defined.");
-                //// Create a new context for evaluating the expression, with the parameters assigned to the arguments.
-                //var expressionContext = new CalculatorContext();
-                //for (int i = 0; i < ParameterCount; i++)
-                //{
-                //    expressionContext.AssignVariable(ParameterMap[i], arguments[i]);
-                //}
-                //return expressionContext.Evaluate(Expression);
-                throw new NotImplementedException("Whatever bruh");
-            }
+
+            Dictionary<string, IValue> parameterMap = [];
+            foreach (IValue value in arguments) parameterMap.Add(ParameterMap![parameterMap.Count], value);
+            return context.EvaluateUnderScope(Expression!, parameterMap);
         }
 
         /// <summary>

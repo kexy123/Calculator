@@ -147,14 +147,14 @@ namespace Core.Expression
         /// <returns>The value returned.</returns>
         public IValue EvaluateUnderScope(string expression, VariableList parameterMap)
         {
-            FunctionsList outScopeFunctions = new(functions);
+            //FunctionsList outScopeFunctions = new(functions);
             VariableList outScopeVariables = new(variables);
 
-
+            foreach (KeyValuePair<string, IValue> parameter in parameterMap) AssignVariable(parameter.Key, parameter.Value);
 
             IValue result = EvaluateTokens(Parse(TokenizeExpression(expression)));
 
-            functions = outScopeFunctions;
+            //functions = outScopeFunctions;
             variables = outScopeVariables;
 
             return result;

@@ -23,7 +23,7 @@ namespace Core.AssetParsers
     [method: SetsRequiredMembers]
     file class BracketEntry(Operator closingBracket, string? function = null)
     {
-        public required Operator ClosingBracket = closingBracket;
+        public required Operator? ClosingBracket = closingBracket;
 
         public int Parameters = 0;
         public readonly string? AppliedFunction = function;
@@ -55,6 +55,19 @@ namespace Core.AssetParsers
             TryInvalid(context, out FunctionOverloadList? overloads);
             if (AppliedFunction is not null) output.Add(new(TokenType.Function, AppliedFunction, new FunctionToken(context.GetFunction(overloads!, Parameters))));
         }
+
+        /// <summary>
+        /// Pushes a function into the output stack directly.
+        /// </summary>
+        /// <param name="context">The CalculatorContext.</param>
+        /// <param name="appliedFunction">The function to apply.</param>
+        /// <param name="parameters">The number of parameters to account for.</param>
+        /// <param name="output">The output stack.</param>
+        public static void PushFunctionInto(CalculatorContext context, string appliedFunction, int parameters, List<Token> output)
+        {
+            FunctionOverloadList overloads = context.GetFunctionFromName(appliedFunction, out _)!;
+            output.Add(new(TokenType.Function, appliedFunction, new FunctionToken(context.GetFunction(overloads, parameters))));
+        }
     }
 
     file record StateFields
@@ -82,9 +95,9 @@ namespace Core.AssetParsers
             while (true)
             {
                 if (shuntingStack.Count == 0) break;
-                Operator last = shuntingStack.First();
-                if (isRightToLeft ? last >= operatorObject : last < operatorObject) break;
-                if (last == ending) return;
+                Operator first = shuntingStack.First();
+                if (isRightToLeft && operatorObject == first || operatorObject > first) break;
+                if (first == ending) return;
                 Output.Add(new(TokenType.Operator, shuntingStack.Pop().Symbol));
             }
 
@@ -114,6 +127,7 @@ namespace Core.AssetParsers
                 bracketStack.Push(new(operatorObject.Opposite!, state.Get<string?>("PotentialFunction", null)));
                 shuntingStack.Push(operatorObject);
                 state.Set("Expected", ExpectedForm.Operand | ExpectedForm.Parameter);
+                state.Set<string?>("PotentialFunction", null);
                 return;
             }
             if (operatorObject.ContainsProperty(OperatorProperty.Separator))
@@ -136,8 +150,8 @@ namespace Core.AssetParsers
             else
             {
                 if (expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
+                PopAndPushOperators(operatorObject);
             }
-            PopAndPushOperators(operatorObject);
             shuntingStack.Push(operatorObject);
             state.Set("Expected", newExpected);
         }
@@ -154,6 +168,7 @@ namespace Core.AssetParsers
             }
             if (token.ContainsProperty(TokenType.Function))
             {
+                if (state.Get<string?>("PotentialFunction", null) is not null) throw new InvalidTokenException($"Cannot have function {token} in implicitly-invoked function");
                 state.Set("PotentialFunction", token.Source);
                 state.Set("Expected", ExpectedForm.Operand);
             }
@@ -161,6 +176,12 @@ namespace Core.AssetParsers
             {
                 Output.Add(token);
                 state.Set("Expected", ExpectedForm.Operator | ExpectedForm.Implicit);
+
+                if (state.Get<string?>("PotentialFunction", null) is string potentialFunction)
+                {
+                    state.Set<string?>("PotentialFunction", null);
+                    BracketEntry.PushFunctionInto(calculatorContext, potentialFunction, 1, Output);
+                }
             }
         }
 
