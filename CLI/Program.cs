@@ -1,6 +1,8 @@
 ﻿using CLI.Display;
 using Core.AssetContexts;
 using Core.Expression;
+using Core.Expression.Parser;
+using Core.Expression.Token;
 using Core.Value;
 
 namespace CLI
@@ -21,21 +23,22 @@ namespace CLI
                 string? value = Console.ReadLine();
                 if (value is null || value == "") return;
 
-                //Token[] tokens = context.TokenizeExpression(value);
-                //Console.WriteLine(List.ToString(tokens));
-                //tokens = context.Parse(tokens);
-                //Console.WriteLine(List.ToString(tokens));
-                //IValue result = context.EvaluateTokens(tokens);
+                Tokenizer tokens = context.TokenizeExpression(value);
+                Console.WriteLine(List.ToString(tokens.Tokens));
+                IParser parser = context.Parse(tokens);
+                Console.WriteLine(List.ToString(parser.Output));
+                IValue result = context.EvaluateTokens(parser);
+                Console.WriteLine(result);
 
-                try
-                {
-                    IValue result = context.Evaluate(value);
-                    Console.WriteLine(result);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                //try
+                //{
+                //    IValue result = context.Evaluate(value);
+                //    Console.WriteLine(result);
+                //}
+                //catch (Exception ex)
+                //{
+                //    Console.WriteLine(ex.Message);
+                //}
             }
         }
     }

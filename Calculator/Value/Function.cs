@@ -15,6 +15,6 @@ namespace Core.Value
 
         public void SetAsVariable(string name) => AssignedVariable = name;
 
-        public readonly override string ToString() => Convert.ToString(Value);
+        public readonly override string ToString() => Convert.ToString(Value)!;
     }
 }

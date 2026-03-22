@@ -33,7 +33,7 @@ namespace Core.Expression
             }
             else
             {
-                Functions.Add(function.Name, new() { { 10, function } });
+                Functions.Add(function.Name, new() { { function.ParameterCount, function } });
             }
         }
         public void AssignVariable(string name, IValue value)
@@ -56,6 +56,11 @@ namespace Core.Expression
             } while (!Functions.TryGetValue(sub, out value));
             result = sub;
             return value;
+        }
+        public Function GetFunction(FunctionOverloadList overloads, int args)
+        {
+            if (overloads.TryGetValue(args, out Function function)) return function;
+            else throw new MathArgumentException($"Function doesn't accept {args} parameter(s)");
         }
         public IValue GetVariableFromName(string name)
         {

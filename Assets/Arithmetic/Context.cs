@@ -17,6 +17,7 @@ namespace Core.AssetContexts
         TokenPattern[] ICalculatorContext.TokenPatterns => TokenPatterns.ExpressionPatterns;
         Operator[] ICalculatorContext.Operators => [
             Operators.OpenBracket, Operators.ClosingBracket,
+            Operators.Comma,
             Operators.Assign,
             Operators.UnaryAddition, Operators.Addition, Operators.UnarySubtraction, Operators.Subtraction, Operators.Multiplication, Operators.Division, Operators.Modulo, Operators.Exponentiation
         ];
@@ -70,7 +71,7 @@ namespace Core.AssetContexts
             new(@"\d*\.\d*", Tokens.DumpNumber),
             new(@"\d+", Tokens.DumpNumber),
 
-            new(@"[-+*/^%()|<>=]+", Tokens.DumpOperation),
+            new(@"[-+*/^%()|<>=,]+", Tokens.DumpOperation),
         ];
     }
 
@@ -99,8 +100,9 @@ namespace Core.AssetContexts
 
     file record Operators
     {
-        public static readonly Operator OpenBracket = new("(", OperatorProperty.Bracket, 0, OperatorFunctions.DoNothing, ClosingBracket);
-        public static readonly Operator ClosingBracket = new(")", OperatorProperty.ClosedBracket, 0, OperatorFunctions.DoNothing, OpenBracket);
+        public static readonly Operator OpenBracket = new("(", OperatorProperty.Bracket, 0, OperatorFunctions.DoNothing);
+        public static readonly Operator ClosingBracket = new(")", OperatorProperty.ClosedBracket, 0, OperatorFunctions.DoNothing);
+        public static readonly Operator Comma = new(",", OperatorProperty.Separator, 0, OperatorFunctions.DoNothing);
 
         public static readonly Operator Assign = new("->", OperatorProperty.Regular, 1, OperatorFunctions.Assign);
 
@@ -116,5 +118,11 @@ namespace Core.AssetContexts
         public static readonly Operator Modulo = new("%", OperatorProperty.Regular, 7, OperatorFunctions.Modulo);
 
         public static readonly Operator Exponentiation = new("^", OperatorProperty.RightToLeft, 15, OperatorFunctions.Exponentiation);
+
+        static Operators()
+        {
+            OpenBracket.Opposite = ClosingBracket;
+            ClosingBracket.Opposite = OpenBracket;
+        }
     }
 }

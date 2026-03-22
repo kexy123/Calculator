@@ -9,6 +9,8 @@ using Core.Variable;
 
 namespace Core.AssetParsers
 {
+    using FunctionOverloadList = Dictionary<int, Function>;
+
     [Flags]
     file enum ExpectedForm
     {
@@ -19,41 +21,40 @@ namespace Core.AssetParsers
     }
 
     [method: SetsRequiredMembers]
-    file class BracketEntry(Operator closingBracket, Function? function = null)
+    file class BracketEntry(Operator closingBracket, string? function = null)
     {
         public required Operator ClosingBracket = closingBracket;
 
         public int Parameters = 0;
-        public readonly Function? AppliedFunction = function;
+        public readonly string? AppliedFunction = function;
 
         /// <summary>
         /// Validates the current function and parameter configuration, throwing an exception if the configuration is invalid.
         /// </summary>
         /// <remarks>Call this method to ensure that the function and its parameters are in a valid state before proceeding with further operations. This method does not return a value; it throws an exception if validation fails.</remarks>
         /// <exception cref="MathArgumentException">Thrown when the number of parameters does not match the expected count for the applied function.</exception>
-        public void TryInvalid()
+        public void TryInvalid(CalculatorContext context, out FunctionOverloadList? overloads)
         {
             if (AppliedFunction == null)
             {
+                overloads = null;
                 if (Parameters == 1) return;
                 throw new MathArgumentException("Expected 1 parameter in bracket, got " + Parameters);
             }
 
-            int count = AppliedFunction!.Value.ParameterCount;
-            if (Parameters != count) throw new MathArgumentException($"Expected {count} parameter(s) in function, got {Parameters}");
+            overloads = context.GetFunctionFromName(AppliedFunction, out _);
+            context.GetFunction(overloads!, Parameters);
         }
 
         /// <summary>
         /// Attempts to add a function token to the specified output list if a function is applied.
         /// </summary>
         /// <param name="output">The list to which the function token will be added if applicable.</param>
-        public void TryPushInto(List<Token> output)
+        public void TryPushInto(CalculatorContext context, List<Token> output)
         {
-            TryInvalid();
-            if (AppliedFunction is Function function) output.Add(new(TokenType.Function, function.Name, new NumberToken(function.ParameterCount)));
+            TryInvalid(context, out FunctionOverloadList? overloads);
+            if (AppliedFunction is not null) output.Add(new(TokenType.Function, AppliedFunction, new FunctionToken(context.GetFunction(overloads!, Parameters))));
         }
-
-        public static implicit operator BracketEntry(Operator closingBracket) => new(closingBracket);
     }
 
     file record StateFields
@@ -61,6 +62,7 @@ namespace Core.AssetParsers
         public static State Fields => new(new() {
             { "Expected", ExpectedForm.Operand },
             { "BracketStack", new Stack<BracketEntry>() },
+            { "PotentialFunction", null }
         });
     }
 
@@ -81,7 +83,7 @@ namespace Core.AssetParsers
             {
                 if (shuntingStack.Count == 0) break;
                 Operator last = shuntingStack.First();
-                if (isRightToLeft && last <= operatorObject || last < operatorObject) break;
+                if (isRightToLeft ? last >= operatorObject : last < operatorObject) break;
                 if (last == ending) return;
                 Output.Add(new(TokenType.Operator, shuntingStack.Pop().Symbol));
             }
@@ -101,7 +103,7 @@ namespace Core.AssetParsers
                 if (expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
                 PopAndPushOperators(operatorObject, operatorObject.Opposite!);
                 shuntingStack.Pop();
-                bracketStack.Pop().TryPushInto(Output);
+                bracketStack.Pop().TryPushInto(calculatorContext, Output);
                 state.Set("Expected", ExpectedForm.Operator | ExpectedForm.Implicit);
                 return;
             }
@@ -109,10 +111,16 @@ namespace Core.AssetParsers
             {
                 if (expected.HasFlag(ExpectedForm.Implicit)) PushOperator(new(TokenType.Operator, "*"));
                 else if (!expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
-                // TODO: Add function before it to the Bracket Stack if it exists.
-                bracketStack.Push(operatorObject.Opposite!);
+                bracketStack.Push(new(operatorObject.Opposite!, state.Get<string>("PotentialFunction")));
                 shuntingStack.Push(operatorObject);
-                state.Set("Expected", newExpected | ExpectedForm.Parameter);
+                state.Set("Expected", ExpectedForm.Operand | ExpectedForm.Parameter);
+                return;
+            }
+            if (operatorObject.ContainsProperty(OperatorProperty.Separator))
+            {
+                if (expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
+                PopAndPushOperators(operatorObject, bracketStack.First().ClosingBracket.Opposite!);
+                state.Set("Expected", ExpectedForm.Operand | ExpectedForm.Parameter);
                 return;
             }
 
@@ -144,8 +152,16 @@ namespace Core.AssetParsers
                 // Only implement if implicit numbering is strictly prohibited by other arithmetic interactions.
                 PushOperator(new(TokenType.Operator, "*"));
             }
-            Output.Add(token);
-            state.Set("Expected", ExpectedForm.Operator | ExpectedForm.Implicit);
+            if (token.ContainsProperty(TokenType.Function))
+            {
+                state.Set("PotentialFunction", token.Source);
+                state.Set("Expected", ExpectedForm.Operand);
+            }
+            else
+            {
+                Output.Add(token);
+                state.Set("Expected", ExpectedForm.Operator | ExpectedForm.Implicit);
+            }
         }
 
         public void Parse(in Token[] tokens, CalculatorContext context)

@@ -36,5 +36,13 @@ namespace Core.Variable
         /// <param name="result">The string sequence that was successfully matched to a function name.</param>
         /// <returns>The function overload list tied to the function name.</returns>
         public FunctionOverloadList? GetFunctionFromName(string name, out string result);
+
+        /// <summary>
+        /// Gets the function from the overload list given the number of arguments.
+        /// </summary>
+        /// <param name="overloads">The overload list.</param>
+        /// <param name="args">The amount of arguments passed on.</param>
+        /// <returns>The function.</returns>
+        public Function GetFunction(FunctionOverloadList overloads, int args);
     }
 }
