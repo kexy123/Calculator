@@ -101,7 +101,6 @@ namespace Core.Expression
 
         public required TokenPattern[] Patterns = context.TokenPatterns;
 
-        public Tokenizer Tokenizer => new(this);
         public IParser Parser => context.Parser;
 
         /// <summary>
@@ -111,7 +110,7 @@ namespace Core.Expression
         /// <returns>The Tokenizer.</returns>
         public Tokenizer TokenizeExpression(string expression)
         {
-            Tokenizer tokenizer = Tokenizer;
+            Tokenizer tokenizer = new(this);
             tokenizer.Tokenize(expression);
             return tokenizer;
         }
@@ -153,9 +152,11 @@ namespace Core.Expression
             //FunctionsList outScopeFunctions = new(functions);
             VariableList outScopeVariables = new(variables);
 
-            foreach (KeyValuePair<string, IValue> parameter in parameterMap) AssignVariable(parameter.Key, parameter.Value, false);
+            foreach (KeyValuePair<string, IValue> parameter in parameterMap) AssignVariable(parameter.Key, parameter.Value.Clone());
 
-            IValue result = EvaluateTokens(Parse(TokenizeExpression(expression)));
+            Tokenizer tokens = TokenizeExpression(expression);
+            IParser parser = Parse(tokens);
+            IValue result = EvaluateTokens(parser);
 
             //functions = outScopeFunctions;
             variables = outScopeVariables;

@@ -24,5 +24,10 @@ namespace Core.Value
 
         [SetsRequiredMembers]
         public ArrayToken(IValue value, string assignedVariable = "") : this([value], assignedVariable) { }
+
+        public readonly IValue Clone()
+        {
+            return new ArrayToken(Values, AssignedVariable);
+        }
     }
 }

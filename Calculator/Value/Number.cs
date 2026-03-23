@@ -45,5 +45,10 @@ namespace Core.Value
         public static NumberToken operator %(NumberToken a, NumberToken b) => a.Value % b.Value;
 
         public static implicit operator NumberToken(BooleanToken value) => new(value == true ? 1 : 0);
+
+        public readonly IValue Clone()
+        {
+            return new NumberToken(Value, AssignedVariable);
+        }
     }
 }

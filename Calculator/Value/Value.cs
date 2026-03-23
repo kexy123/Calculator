@@ -19,6 +19,13 @@
         /// </summary>
         /// <param name="name">The name of the variable to set. Cannot be null or empty.</param>
         public void SetAsVariable(string name);
+
+        /// <summary>
+        /// Clones itself.
+        /// </summary>
+        /// <remarks>This exists in the event of the requriement to clone a boxed struct, especially under an interface.</remarks>
+        /// <returns>Itself.</returns>
+        public IValue Clone();
     }
 
     public static class Value {

@@ -22,5 +22,10 @@ namespace Core.Value
         public BooleanToken(IValue value) : this(value is BooleanToken boolean ? boolean.Value : throw new InvalidValueException(value + " is not a Boolean"), "") { }
         [SetsRequiredMembers]
         public BooleanToken(object value) : this(value is BooleanToken boolean ? boolean.Value : value != null) { }
+
+        public readonly IValue Clone()
+        {
+            return new BooleanToken(Value, AssignedVariable);
+        }
     }
 }
