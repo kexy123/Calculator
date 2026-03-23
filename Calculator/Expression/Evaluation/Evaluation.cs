@@ -29,10 +29,10 @@ namespace Core.Expression.Evaluation
 
             switch (operand.Type)
             {
-                case Token.TokenType.Number:
+                case Token.TokenProperty.Number:
                     OutputStack.Push(operand.Value!);
                     break;
-                case Token.TokenType.Variable:
+                case Token.TokenProperty.Variable:
                     OutputStack.Push(operand.Value!);
                     break;
             }
@@ -44,14 +44,14 @@ namespace Core.Expression.Evaluation
             IValue right = OutputStack.Pop();
             IValue result;
 
-            if (!operatorObject.ContainsProperty(OperatorProperty.Transitive)) PushTransitivity();
+            if (!operatorObject.HasProperty(OperatorProperty.Transitive)) PushTransitivity();
 
             IValue left = OutputStack.Pop();
 
-            if (operatorObject.ContainsProperty(OperatorProperty.Unary)) result = operatorObject.Execute(new NothingToken(), right, Context);
+            if (operatorObject.HasProperty(OperatorProperty.Unary)) result = operatorObject.Execute(new NothingToken(), right, Context);
             else result = operatorObject.Execute(left, right, Context);
 
-            if (operatorObject.ContainsProperty(OperatorProperty.Transitive))
+            if (operatorObject.HasProperty(OperatorProperty.Transitive))
             {
                 if (transitiveValue is not null) transitiveValue &= (BooleanToken)result;
                 else transitiveValue = (BooleanToken)result;
@@ -88,9 +88,9 @@ namespace Core.Expression.Evaluation
 
             foreach (Token.Token token in tokens)
             {
-                if (token.ContainsProperty(Token.TokenType.Function)) PerformFunction(token);
-                else if (token.ContainsProperty(Token.TokenType.Operand)) PushOperand(token);
-                else if (token.ContainsProperty(Token.TokenType.Operator)) PerformOperator(token);
+                if (token.HasProperty(Token.TokenProperty.Function)) PerformFunction(token);
+                else if (token.HasProperty(Token.TokenProperty.Operand)) PushOperand(token);
+                else if (token.HasProperty(Token.TokenProperty.Operator)) PerformOperator(token);
                 else throw new InvalidTokenException($"Invalid token {token}");
             }
 

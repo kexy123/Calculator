@@ -14,7 +14,7 @@ namespace Core.Expression.Token
     }
 
     [Flags]
-    public enum TokenType
+    public enum TokenProperty
     {
         Operand = 1,
         Number = 3,
@@ -27,9 +27,9 @@ namespace Core.Expression.Token
     }
 
     [method: SetsRequiredMembers]
-    public struct Token(TokenType type, string source, IValue? value = null)
+    public struct Token(TokenProperty type, string source, IValue? value = null)
     {
-        public required TokenType Type = type;
+        public required TokenProperty Type = type;
         public required string Source = source;
         public IValue? Value = value;
 
@@ -38,7 +38,7 @@ namespace Core.Expression.Token
         /// </summary>
         /// <param name="property">The property or combination of properties to check for within the Token.</param>
         /// <returns>true if all specified properties are present, and false if not.</returns>
-        public readonly bool ContainsProperty(TokenType property) => Type.HasFlag(property);
+        public readonly bool HasProperty(TokenProperty property) => Type.HasFlag(property);
 
         public override readonly string ToString() => $"'{Source}'; {Type}";
     }

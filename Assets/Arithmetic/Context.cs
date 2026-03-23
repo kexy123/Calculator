@@ -30,7 +30,7 @@ namespace Core.AssetContexts
         public static TokenFunction DumpNumber = (tokenizer, match) =>
         {
             string number = match.Value;
-            tokenizer.AddToken(new(TokenType.Number, number, new NumberToken(Convert.ToDouble(number))));
+            tokenizer.AddToken(new(TokenProperty.Number, number, new NumberToken(Convert.ToDouble(number))));
             tokenizer.Index += number.Length;
         };
 
@@ -39,13 +39,13 @@ namespace Core.AssetContexts
             tokenizer.Context.GetFunctionFromName(match.Value, out string result);
             if (result != "")
             {
-                tokenizer.AddToken(new(TokenType.Function, result));
+                tokenizer.AddToken(new(TokenProperty.Function, result));
                 tokenizer.Index += result.Length;
             }
             else
             {
                 IValue value = tokenizer.Context.GetVariableFromName(match.Value);
-                tokenizer.AddToken(new(TokenType.Variable, match.Value, value));
+                tokenizer.AddToken(new(TokenProperty.Variable, match.Value, value));
                 tokenizer.Index += value.AssignedVariable.Length;
             }
         };
@@ -54,7 +54,7 @@ namespace Core.AssetContexts
         {
             string operation = match.Value;
             Operator operatorObject = tokenizer.Context.DetermineOperationFromString(operation);
-            tokenizer.AddToken(new(TokenType.Operator, operatorObject.Symbol));
+            tokenizer.AddToken(new(TokenProperty.Operator, operatorObject.Symbol));
             tokenizer.Index += operatorObject.Symbol.Length;
         };
 

@@ -53,7 +53,7 @@ namespace Core.AssetParsers
         public void TryPushInto(CalculatorContext context, List<Token> output)
         {
             TryInvalid(context, out FunctionOverloadList? overloads);
-            if (AppliedFunction is not null) output.Add(new(TokenType.Function, AppliedFunction, new FunctionToken(context.GetFunction(overloads!, Parameters))));
+            if (AppliedFunction is not null) output.Add(new(TokenProperty.Function, AppliedFunction, new FunctionToken(context.GetFunction(overloads!, Parameters))));
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Core.AssetParsers
         public static void PushFunctionInto(CalculatorContext context, string appliedFunction, int parameters, List<Token> output)
         {
             FunctionOverloadList overloads = context.GetFunctionFromName(appliedFunction, out _)!;
-            output.Add(new(TokenType.Function, appliedFunction, new FunctionToken(context.GetFunction(overloads, parameters))));
+            output.Add(new(TokenProperty.Function, appliedFunction, new FunctionToken(context.GetFunction(overloads, parameters))));
         }
     }
 
@@ -75,7 +75,8 @@ namespace Core.AssetParsers
         public static State Fields => new(new() {
             { "Expected", ExpectedForm.Operand },
             { "BracketStack", new Stack<BracketEntry>() },
-            { "PotentialFunction", null }
+            { "PotentialFunction", null },
+            //{ "IsTransitive", false }
         });
     }
 
@@ -91,14 +92,14 @@ namespace Core.AssetParsers
 
         private void PopAndPushOperators(Operator operatorObject, Operator? ending = null)
         {
-            bool isRightToLeft = operatorObject.ContainsProperty(OperatorProperty.RightToLeft);
+            bool isRightToLeft = operatorObject.HasProperty(OperatorProperty.RightToLeft);
             while (true)
             {
                 if (shuntingStack.Count == 0) break;
                 Operator first = shuntingStack.First();
                 if (isRightToLeft && operatorObject == first || operatorObject > first) break;
                 if (first == ending) return;
-                Output.Add(new(TokenType.Operator, shuntingStack.Pop().Symbol));
+                Output.Add(new(TokenProperty.Operator, shuntingStack.Pop().Symbol));
             }
 
             if (ending is Operator endOperator && (shuntingStack.Count == 0 || shuntingStack.First() != endOperator)) throw new OperatorFormatException($"Expected {endOperator}, got {shuntingStack.First()}");
@@ -109,9 +110,23 @@ namespace Core.AssetParsers
             ExpectedForm newExpected = ExpectedForm.Operand;
             ExpectedForm expected = state.Get<ExpectedForm>("Expected");
             Stack<BracketEntry> bracketStack = state.Get<Stack<BracketEntry>>("BracketStack");
+            //bool isTransitive = state.Get<bool>("IsTransitive");
 
             Operator operatorObject = calculatorContext.DetermineOperationFromString(token.Source);
-            if (operatorObject.ContainsProperty(OperatorProperty.ClosedBracket))
+
+            //if (operatorObject.ContainsProperty(OperatorProperty.Transitive))
+            //{
+
+            //}
+            //else
+            //{
+            //    if (isTransitive)
+            //    {
+
+            //    }
+            //}
+
+            if (operatorObject.HasProperty(OperatorProperty.ClosedBracket))
             {
                 if (expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
                 PopAndPushOperators(operatorObject, operatorObject.Opposite!);
@@ -120,9 +135,9 @@ namespace Core.AssetParsers
                 state.Set("Expected", ExpectedForm.Operator | ExpectedForm.Implicit);
                 return;
             }
-            if (operatorObject.ContainsProperty(OperatorProperty.Bracket))
+            if (operatorObject.HasProperty(OperatorProperty.Bracket))
             {
-                if (expected.HasFlag(ExpectedForm.Implicit)) PushOperator(new(TokenType.Operator, "*"));
+                if (expected.HasFlag(ExpectedForm.Implicit)) PushOperator(new(TokenProperty.Operator, "*"));
                 else if (!expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
                 bracketStack.Push(new(operatorObject.Opposite!, state.Get<string?>("PotentialFunction", null)));
                 shuntingStack.Push(operatorObject);
@@ -130,7 +145,7 @@ namespace Core.AssetParsers
                 state.Set<string?>("PotentialFunction", null);
                 return;
             }
-            if (operatorObject.ContainsProperty(OperatorProperty.Separator))
+            if (operatorObject.HasProperty(OperatorProperty.Separator))
             {
                 if (expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
                 PopAndPushOperators(operatorObject, bracketStack.First().ClosingBracket!.Opposite!);
@@ -138,7 +153,7 @@ namespace Core.AssetParsers
                 return;
             }
 
-            if (operatorObject.ContainsProperty(OperatorProperty.UnaryPotential))
+            if (operatorObject.HasProperty(OperatorProperty.UnaryPotential))
             {
                 //if (operatorObject.ContainsProperty(OperatorProperty.UnaryRight)) // TODO: Make this functional.
                 if (expected.HasFlag(ExpectedForm.Operand))
@@ -152,7 +167,7 @@ namespace Core.AssetParsers
                 if (expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
                 PopAndPushOperators(operatorObject);
             }
-            if (!operatorObject.ContainsProperty(OperatorProperty.Ignore)) shuntingStack.Push(operatorObject);
+            if (!operatorObject.HasProperty(OperatorProperty.Ignore)) shuntingStack.Push(operatorObject);
             state.Set("Expected", newExpected);
         }
 
@@ -164,9 +179,9 @@ namespace Core.AssetParsers
             {
                 //if (token.Type == TokenType.Number) throw new InvalidTokenException($"Implicit multiplication cannot be applied to {token}");
                 // Only implement if implicit numbering is strictly prohibited by other arithmetic interactions.
-                PushOperator(new(TokenType.Operator, "*"));
+                PushOperator(new(TokenProperty.Operator, "*"));
             }
-            if (token.ContainsProperty(TokenType.Function))
+            if (token.HasProperty(TokenProperty.Function))
             {
                 if (state.Get<string?>("PotentialFunction", null) is not null) throw new InvalidTokenException($"Cannot have function {token} in implicitly-invoked function");
                 state.Set("PotentialFunction", token.Source);
@@ -206,8 +221,8 @@ namespace Core.AssetParsers
                     entry.Parameters++;
                     state.Set("Expected", expected & ~ExpectedForm.Parameter);
                 }
-                if (token.ContainsProperty(TokenType.Operator)) PushOperator(token);
-                if (token.ContainsProperty(TokenType.Operand)) PushOperand(token);
+                if (token.HasProperty(TokenProperty.Operator)) PushOperator(token);
+                if (token.HasProperty(TokenProperty.Operand)) PushOperand(token);
             }
 
             expected = state.Get<ExpectedForm>("Expected");
@@ -216,8 +231,8 @@ namespace Core.AssetParsers
             while (shuntingStack.Count > 0)
             {
                 Operator last = shuntingStack.Pop();
-                if (last.ContainsProperty(OperatorProperty.Bracket)) throw new OperatorFormatException("Mismatched brackets");
-                Output.Add(new(TokenType.Operator, last.Symbol));
+                if (last.HasProperty(OperatorProperty.Bracket)) throw new OperatorFormatException("Mismatched brackets");
+                Output.Add(new(TokenProperty.Operator, last.Symbol));
             }
         }
     }

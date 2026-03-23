@@ -41,7 +41,7 @@ namespace Core.Operation
         /// </summary>
         /// <param name="property">The property or combination of properties to check for within the Operator.</param>
         /// <returns>true if all specified properties are present, and false if not.</returns>
-        public bool ContainsProperty(OperatorProperty property) => Properties.HasFlag(property);
+        public bool HasProperty(OperatorProperty property) => Properties.HasFlag(property);
 
         public override bool Equals(object? obj) => obj is Operator operatorObject && Symbol == operatorObject.Symbol;
         public override int GetHashCode() => Symbol.GetHashCode();
