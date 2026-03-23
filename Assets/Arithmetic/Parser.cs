@@ -97,7 +97,7 @@ namespace Core.AssetParsers
             {
                 if (shuntingStack.Count == 0) break;
                 Operator first = shuntingStack.First();
-                if (isRightToLeft && operatorObject == first || operatorObject > first) break;
+                if (isRightToLeft ? operatorObject >= first : operatorObject > first) break;
                 if (first == ending) return;
                 Output.Add(new(TokenProperty.Operator, shuntingStack.Pop().Symbol));
             }

@@ -18,7 +18,7 @@ namespace Core.AssetContexts
             Operators.OpenBracket, Operators.ClosingBracket,
             Operators.Comma,
             Operators.Assign,
-            Operators.IsEqualTo,
+            Operators.IsEqualTo, Operators.IsLessThan, Operators.IsGreaterThan, Operators.IsLEQTo, Operators.IsGEQTo,
             Operators.UnaryAddition, Operators.Addition, Operators.UnarySubtraction, Operators.Subtraction, Operators.Multiplication, Operators.Division, Operators.Modulo, Operators.Exponentiation
         ];
         IParser ICalculatorContext.Parser => new ArithmeticParser();
@@ -100,6 +100,11 @@ namespace Core.AssetContexts
             return new BooleanToken(object.Equals(a.Value, b.Value));
         }
 
+        public static IValue IsGreaterThan(IValue a, IValue b, CalculatorContext _) => new BooleanToken(((NumberToken)a).Value > ((NumberToken)b).Value);
+        public static IValue IsLessThan(IValue a, IValue b, CalculatorContext _) => new BooleanToken(((NumberToken)a).Value < ((NumberToken)b).Value);
+        public static IValue IsGEQTo(IValue a, IValue b, CalculatorContext _) => new BooleanToken(((NumberToken)a).Value >= ((NumberToken)b).Value);
+        public static IValue IsLEQTo(IValue a, IValue b, CalculatorContext _) => new BooleanToken(((NumberToken)a).Value <= ((NumberToken)b).Value);
+
         public static IValue UnaryAddition(IValue _, IValue b, CalculatorContext __) => new NumberToken(b);
         public static IValue Addition(IValue a, IValue b, CalculatorContext _) => new NumberToken(a) + new NumberToken(b);
         public static IValue UnarySubtraction(IValue _, IValue b, CalculatorContext __) => 0 - new NumberToken(b);
@@ -121,6 +126,10 @@ namespace Core.AssetContexts
         public static readonly Operator Assign = new("->", OperatorProperty.Regular, 1, OperatorFunctions.Assign);
 
         public static readonly Operator IsEqualTo = new("=", OperatorProperty.Transitive, 3, OperatorFunctions.IsEqualTo);
+        public static readonly Operator IsGreaterThan = new(">", OperatorProperty.Transitive, 3, OperatorFunctions.IsGreaterThan);
+        public static readonly Operator IsLessThan = new("<", OperatorProperty.Transitive, 3, OperatorFunctions.IsLessThan);
+        public static readonly Operator IsGEQTo = new(">=", OperatorProperty.Transitive, 3, OperatorFunctions.IsGEQTo);
+        public static readonly Operator IsLEQTo = new("<=", OperatorProperty.Transitive, 3, OperatorFunctions.IsLEQTo);
 
 
 

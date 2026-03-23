@@ -55,7 +55,7 @@ namespace Core.Expression.Evaluation
             {
                 if (transitiveValue is not null) transitiveValue &= (BooleanToken)result;
                 else transitiveValue = (BooleanToken)result;
-                OutputStack.Push(right);
+                OutputStack.Push(left);
             }
             else OutputStack.Push(result);
         }
