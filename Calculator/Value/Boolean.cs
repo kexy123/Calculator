@@ -3,10 +3,11 @@
 namespace Core.Value
 {
     [method: SetsRequiredMembers]
-    public struct BooleanToken(bool value, string assignedVariable = "") : IValue
+    public struct BooleanToken(bool value, string assignedVariable = "", string note = "") : IValue
     {
         public required bool Value = value;
         public required string AssignedVariable = assignedVariable;
+        public string Note = note;
 
         public readonly ValueType Type => ValueType.Number;
         readonly object IValue.Value => Value;
@@ -14,7 +15,7 @@ namespace Core.Value
 
         public void SetAsVariable(string name) => AssignedVariable = name;
 
-        public readonly override string ToString() => Value ? "TRUE" : "FALSE";
+        public readonly override string ToString() => (Value ? "TRUE" : "FALSE") + (Note == "" ? "" : $" ({Note})");
 
         public static implicit operator bool(BooleanToken number) => number.Value;
 

@@ -95,7 +95,7 @@ namespace Core.AssetContexts
                 string name = a.AssignedVariable;
                 if (name == "") throw new InvalidValueException(a + " is not a variable name");
                 c.AssignVariable(name, b);
-                return new BooleanToken(true);
+                return new BooleanToken(true, note: $"Assigned '{name}' to value");
             }
             return new BooleanToken(object.Equals(a.Value, b.Value));
         }
