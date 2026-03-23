@@ -16,7 +16,7 @@ namespace Core.Operation
         Unary = 4,
         UnaryRight = 12,
 
-        Transitive = 16,
+        Transitive = 17,
 
         Bracket = 32,
         ClosedBracket = 96,

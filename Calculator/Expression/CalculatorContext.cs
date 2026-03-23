@@ -1,4 +1,5 @@
-﻿using Core.Expression.Parser;
+﻿using Core.Expression.Evaluation;
+using Core.Expression.Parser;
 using Core.Expression.Token;
 using Core.Operation;
 using Core.Value;
@@ -132,7 +133,11 @@ namespace Core.Expression
         /// </summary>
         /// <param name="parser">The parser to go over.</param>
         /// <returns>The value returned.</returns>
-        public IValue EvaluateTokens(IParser parser) => Evaluation.Evaluator.Evaluate([.. parser.Output], this);
+        public IValue EvaluateTokens(IParser parser)
+        {
+            Evaluator evaluator = new(this);
+            return evaluator.Evaluate([.. parser.Output]);
+        }
 
         /// <summary>
         /// Evaluates the given expression.

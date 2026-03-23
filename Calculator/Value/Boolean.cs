@@ -17,7 +17,11 @@ namespace Core.Value
 
         public readonly override string ToString() => (Value ? "TRUE" : "FALSE") + (Note == "" ? "" : $" ({Note})");
 
-        public static implicit operator bool(BooleanToken number) => number.Value;
+        public static implicit operator bool(BooleanToken boolean) => boolean.Value;
+
+        public static implicit operator BooleanToken(bool value) => new(value);
+
+        public static BooleanToken operator &(BooleanToken a, BooleanToken b) => a.Value && b.Value;
 
         [SetsRequiredMembers]
         public BooleanToken(IValue value) : this(value is BooleanToken boolean ? boolean.Value : throw new InvalidValueException(value + " is not a Boolean"), "") { }

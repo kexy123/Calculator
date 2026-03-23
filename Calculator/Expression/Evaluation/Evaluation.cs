@@ -6,41 +6,72 @@ namespace Core.Expression.Evaluation
 {
     using ValueStack = Stack<IValue>;
 
-    public static class Evaluator
+    public class Evaluator(CalculatorContext context)
     {
-        private static void PushOperand(Token.Token operand, ValueStack outputStack)
+        public ValueStack OutputStack = [];
+        public CalculatorContext Context = context;
+
+        private BooleanToken? transitiveValue;
+
+        private void PushTransitivity()
         {
+            if (transitiveValue is not null)
+            {
+                OutputStack.Pop();
+                OutputStack.Push(transitiveValue);
+                transitiveValue = null;
+            }
+        }
+
+        private void PushOperand(Token.Token operand)
+        {
+            PushTransitivity();
+
             switch (operand.Type)
             {
                 case Token.TokenType.Number:
-                    outputStack.Push(operand.Value!);
+                    OutputStack.Push(operand.Value!);
                     break;
                 case Token.TokenType.Variable:
-                    outputStack.Push(operand.Value!);
+                    OutputStack.Push(operand.Value!);
                     break;
             }
         }
 
-        private static void PerformOperator(Token.Token token, ValueStack outputStack, CalculatorContext context)
+        private void PerformOperator(Token.Token token)
         {
-            Operator operatorObject = context.DetermineOperationFromString(token.Source);
-            IValue first = outputStack.Pop();
+            Operator operatorObject = Context.DetermineOperationFromString(token.Source);
+            IValue right = OutputStack.Pop();
             IValue result;
-            if (operatorObject.ContainsProperty(OperatorProperty.Unary)) result = operatorObject.Execute(new NothingToken(), first, context);
-            else result = operatorObject.Execute(outputStack.Pop(), first, context);
-            outputStack.Push(result);
+
+            if (!operatorObject.ContainsProperty(OperatorProperty.Transitive)) PushTransitivity();
+
+            IValue left = OutputStack.Pop();
+
+            if (operatorObject.ContainsProperty(OperatorProperty.Unary)) result = operatorObject.Execute(new NothingToken(), right, Context);
+            else result = operatorObject.Execute(left, right, Context);
+
+            if (operatorObject.ContainsProperty(OperatorProperty.Transitive))
+            {
+                if (transitiveValue is not null) transitiveValue &= (BooleanToken)result;
+                else transitiveValue = (BooleanToken)result;
+                OutputStack.Push(right);
+            }
+            else OutputStack.Push(result);
         }
 
-        private static void PerformFunction(Token.Token token, ValueStack outputStack, CalculatorContext context)
+        private void PerformFunction(Token.Token token)
         {
+            PushTransitivity();
+
             if (token.Value is FunctionToken functionObject)
             {
                 Function func = functionObject.Value;
                 List<IValue> arguments = [];
-                for (int i = 0; i < func.ParameterCount; i++) arguments.Add(outputStack.Pop());
+                for (int i = 0; i < func.ParameterCount; i++) arguments.Add(OutputStack.Pop());
                 arguments.Reverse();
-                IValue result = func.Invoke(context, [.. arguments]);
-                outputStack.Push(result);
+                IValue result = func.Invoke(Context, [.. arguments]);
+                OutputStack.Push(result);
             }
         }
 
@@ -51,19 +82,20 @@ namespace Core.Expression.Evaluation
         /// <param name="context">The calculator context.</param>
         /// <returns>The final value.</returns>
         /// <exception cref="InvalidTokenException">Thrown in any invalid token form.</exception>
-        public static IValue Evaluate(Token.Token[] tokens, CalculatorContext context)
+        public IValue Evaluate(Token.Token[] tokens)
         {
-            ValueStack outputStack = [];
+            OutputStack.Clear();
 
             foreach (Token.Token token in tokens)
             {
-                if (token.ContainsProperty(Token.TokenType.Function)) PerformFunction(token, outputStack, context);
-                else if (token.ContainsProperty(Token.TokenType.Operand)) PushOperand(token, outputStack);
-                else if (token.ContainsProperty(Token.TokenType.Operator)) PerformOperator(token, outputStack, context);
+                if (token.ContainsProperty(Token.TokenType.Function)) PerformFunction(token);
+                else if (token.ContainsProperty(Token.TokenType.Operand)) PushOperand(token);
+                else if (token.ContainsProperty(Token.TokenType.Operator)) PerformOperator(token);
                 else throw new InvalidTokenException($"Invalid token {token}");
             }
 
-            return outputStack.First();
+            PushTransitivity();
+            return OutputStack.First();
         }
     }
 }
