@@ -76,7 +76,7 @@ namespace Core.AssetParsers
             { "Expected", ExpectedForm.Operand },
             { "BracketStack", new Stack<BracketEntry>() },
             { "PotentialFunction", null },
-            //{ "IsTransitive", false }
+            { "IsTransitive", false }
         });
     }
 
@@ -105,33 +105,30 @@ namespace Core.AssetParsers
             if (ending is Operator endOperator && (shuntingStack.Count == 0 || shuntingStack.First() != endOperator)) throw new OperatorFormatException($"Expected {endOperator}, got {shuntingStack.First()}");
         }
 
+        private void CloseTransitivity(bool isTransitive)
+        {
+            if (isTransitive)
+            {
+                Output.Add(new(TokenProperty.Operand, "", new VoidToken()));
+                state.Set("IsTransitive", false);
+            }
+        }
+
         private void PushOperator(Token token)
         {
             ExpectedForm newExpected = ExpectedForm.Operand;
             ExpectedForm expected = state.Get<ExpectedForm>("Expected");
             Stack<BracketEntry> bracketStack = state.Get<Stack<BracketEntry>>("BracketStack");
-            //bool isTransitive = state.Get<bool>("IsTransitive");
+            bool isTransitive = state.Get<bool>("IsTransitive");
 
             Operator operatorObject = calculatorContext.DetermineOperationFromString(token.Source);
-
-            //if (operatorObject.ContainsProperty(OperatorProperty.Transitive))
-            //{
-
-            //}
-            //else
-            //{
-            //    if (isTransitive)
-            //    {
-
-            //    }
-            //}
-
             if (operatorObject.HasProperty(OperatorProperty.ClosedBracket))
             {
                 if (expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
                 PopAndPushOperators(operatorObject, operatorObject.Opposite!);
                 shuntingStack.Pop();
                 bracketStack.Pop().TryPushInto(calculatorContext, Output);
+                CloseTransitivity(isTransitive);
                 state.Set("Expected", ExpectedForm.Operator | ExpectedForm.Implicit);
                 return;
             }
@@ -149,6 +146,7 @@ namespace Core.AssetParsers
             {
                 if (expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
                 PopAndPushOperators(operatorObject, bracketStack.First().ClosingBracket!.Opposite!);
+                CloseTransitivity(isTransitive);
                 state.Set("Expected", ExpectedForm.Operand | ExpectedForm.Parameter);
                 return;
             }
@@ -167,6 +165,9 @@ namespace Core.AssetParsers
                 if (expected.HasFlag(ExpectedForm.Operand)) throw new OperatorFormatException($"Expected operand, got {operatorObject}");
                 PopAndPushOperators(operatorObject);
             }
+
+            if (operatorObject.HasProperty(OperatorProperty.Transitive)) state.Set("IsTransitive", true);
+
             if (!operatorObject.HasProperty(OperatorProperty.Ignore)) shuntingStack.Push(operatorObject);
             state.Set("Expected", newExpected);
         }

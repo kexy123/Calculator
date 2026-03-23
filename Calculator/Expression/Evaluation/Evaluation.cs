@@ -30,7 +30,7 @@ namespace Core.Expression.Evaluation
             switch (operand.Type)
             {
                 case Token.TokenProperty.Number:
-                    OutputStack.Push(operand.Value!);
+                    if (operand.Value is not VoidToken) OutputStack.Push(operand.Value!);
                     break;
                 case Token.TokenProperty.Variable:
                     OutputStack.Push(operand.Value!);

@@ -7,6 +7,7 @@
         Array,
         Function,
         Expression,
+        Ignore
     }
 
     public interface IValue {

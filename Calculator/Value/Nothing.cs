@@ -20,7 +20,7 @@ namespace Core.Value
         }
         readonly string IValue.AssignedVariable => AssignedVariable;
 
-        public readonly override string ToString() => "Nothing";
+        public readonly override string ToString() => "Nothing()";
 
         public readonly IValue Clone()
         {
