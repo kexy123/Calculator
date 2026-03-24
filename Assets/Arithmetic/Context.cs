@@ -17,8 +17,10 @@ namespace Core.AssetContexts
         Operator[] ICalculatorContext.Operators => [
             Operators.OpenBracket, Operators.ClosingBracket,
             Operators.Comma,
+            Operators.ExclamationMark, Operators.UnaryNot,
             Operators.Assign,
-            Operators.IsEqualTo, Operators.IsLessThan, Operators.IsGreaterThan, Operators.IsLEQTo, Operators.IsGEQTo,
+            Operators.And,
+            Operators.IsEqualTo, Operators.IsNotEqualTo, Operators.IsLessThan, Operators.IsGreaterThan, Operators.IsLEQTo, Operators.IsGEQTo,
             Operators.UnaryAddition, Operators.Addition, Operators.UnarySubtraction, Operators.Subtraction, Operators.Multiplication, Operators.Division, Operators.Modulo, Operators.Exponentiation
         ];
         IParser ICalculatorContext.Parser => new ArithmeticParser();
@@ -71,7 +73,7 @@ namespace Core.AssetContexts
             new(@"\d*\.\d*", Tokens.DumpNumber),
             new(@"\d+", Tokens.DumpNumber),
 
-            new(@"[-+*/^%()|<>=,]+", Tokens.DumpOperation),
+            new(@"[-+*/^%()|<>=,&!]+", Tokens.DumpOperation),
         ];
     }
 
@@ -100,10 +102,14 @@ namespace Core.AssetContexts
             return new BooleanToken(object.Equals(a.Value, b.Value));
         }
 
+        public static IValue IsNotEqualTo(IValue a, IValue b, CalculatorContext _) => new BooleanToken(!object.Equals(a.Value, b.Value));
         public static IValue IsGreaterThan(IValue a, IValue b, CalculatorContext _) => new BooleanToken(((NumberToken)a).Value > ((NumberToken)b).Value);
         public static IValue IsLessThan(IValue a, IValue b, CalculatorContext _) => new BooleanToken(((NumberToken)a).Value < ((NumberToken)b).Value);
         public static IValue IsGEQTo(IValue a, IValue b, CalculatorContext _) => new BooleanToken(((NumberToken)a).Value >= ((NumberToken)b).Value);
         public static IValue IsLEQTo(IValue a, IValue b, CalculatorContext _) => new BooleanToken(((NumberToken)a).Value <= ((NumberToken)b).Value);
+
+        public static IValue Not(IValue _, IValue b, CalculatorContext __) => new BooleanToken(!((BooleanToken)b).Value);
+        public static IValue And(IValue a, IValue b, CalculatorContext _) => new BooleanToken(((BooleanToken)a).Value && ((BooleanToken)b).Value);
 
         public static IValue UnaryAddition(IValue _, IValue b, CalculatorContext __) => new NumberToken(b);
         public static IValue Addition(IValue a, IValue b, CalculatorContext _) => new NumberToken(a) + new NumberToken(b);
@@ -125,24 +131,27 @@ namespace Core.AssetContexts
 
         public static readonly Operator Assign = new("->", OperatorProperty.Regular, 1, OperatorFunctions.Assign);
 
-        public static readonly Operator IsEqualTo = new("=", OperatorProperty.Transitive, 3, OperatorFunctions.IsEqualTo);
-        public static readonly Operator IsGreaterThan = new(">", OperatorProperty.Transitive, 3, OperatorFunctions.IsGreaterThan);
-        public static readonly Operator IsLessThan = new("<", OperatorProperty.Transitive, 3, OperatorFunctions.IsLessThan);
-        public static readonly Operator IsGEQTo = new(">=", OperatorProperty.Transitive, 3, OperatorFunctions.IsGEQTo);
-        public static readonly Operator IsLEQTo = new("<=", OperatorProperty.Transitive, 3, OperatorFunctions.IsLEQTo);
+        public static readonly Operator And = new("&&", OperatorProperty.Regular, 3, OperatorFunctions.And);
+        public static readonly Operator UnaryNot = new("u!", OperatorProperty.Unary | OperatorProperty.RightToLeft, 3, OperatorFunctions.Not);
+        public static readonly Operator ExclamationMark = new("!", OperatorProperty.UnaryPotential, 0, OperatorFunctions.DoNothing, UnaryNot);
 
+        public static readonly Operator IsEqualTo = new("=", OperatorProperty.Transitive, 7, OperatorFunctions.IsEqualTo);
+        public static readonly Operator IsNotEqualTo = new("!=", OperatorProperty.Transitive, 7, OperatorFunctions.IsNotEqualTo);
+        public static readonly Operator IsGreaterThan = new(">", OperatorProperty.Transitive, 7, OperatorFunctions.IsGreaterThan);
+        public static readonly Operator IsLessThan = new("<", OperatorProperty.Transitive, 7, OperatorFunctions.IsLessThan);
+        public static readonly Operator IsGEQTo = new(">=", OperatorProperty.Transitive, 7, OperatorFunctions.IsGEQTo);
+        public static readonly Operator IsLEQTo = new("<=", OperatorProperty.Transitive, 7, OperatorFunctions.IsLEQTo);
 
+        public static readonly Operator UnaryAddition = new("u+", OperatorProperty.Unary | OperatorProperty.RightToLeft | OperatorProperty.Ignore, 15, OperatorFunctions.UnaryAddition);
+        public static readonly Operator Addition = new("+", OperatorProperty.UnaryPotential, 15, OperatorFunctions.Addition, UnaryAddition);
+        public static readonly Operator UnarySubtraction = new("u-", OperatorProperty.Unary | OperatorProperty.RightToLeft, 15, OperatorFunctions.UnarySubtraction);
+        public static readonly Operator Subtraction = new("-", OperatorProperty.UnaryPotential, 15, OperatorFunctions.Subtraction, UnarySubtraction);
 
-        public static readonly Operator UnaryAddition = new("u+", OperatorProperty.Unary | OperatorProperty.RightToLeft | OperatorProperty.Ignore, 7, OperatorFunctions.UnaryAddition);
-        public static readonly Operator Addition = new("+", OperatorProperty.UnaryPotential, 7, OperatorFunctions.Addition, UnaryAddition);
-        public static readonly Operator UnarySubtraction = new("u-", OperatorProperty.Unary | OperatorProperty.RightToLeft, 7, OperatorFunctions.UnarySubtraction);
-        public static readonly Operator Subtraction = new("-", OperatorProperty.UnaryPotential, 7, OperatorFunctions.Subtraction, UnarySubtraction);
+        public static readonly Operator Multiplication = new("*", OperatorProperty.Regular, 31, OperatorFunctions.Multiplication);
+        public static readonly Operator Division = new("/", OperatorProperty.Regular, 31, OperatorFunctions.Division);
+        public static readonly Operator Modulo = new("%", OperatorProperty.Regular, 31, OperatorFunctions.Modulo);
 
-        public static readonly Operator Multiplication = new("*", OperatorProperty.Regular, 15, OperatorFunctions.Multiplication);
-        public static readonly Operator Division = new("/", OperatorProperty.Regular, 15, OperatorFunctions.Division);
-        public static readonly Operator Modulo = new("%", OperatorProperty.Regular, 15, OperatorFunctions.Modulo);
-
-        public static readonly Operator Exponentiation = new("^", OperatorProperty.RightToLeft, 31, OperatorFunctions.Exponentiation);
+        public static readonly Operator Exponentiation = new("^", OperatorProperty.RightToLeft, 63, OperatorFunctions.Exponentiation);
 
         static Operators()
         {

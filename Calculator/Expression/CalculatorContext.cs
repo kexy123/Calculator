@@ -152,6 +152,7 @@ namespace Core.Expression
         /// <param name="expression">The expression to evaluate.</param>
         /// <param name="parameterMap">The parameter map.</param>
         /// <returns>The value returned.</returns>
+        [SuppressMessage("Style", "IDE0028:Simplify collection initialization", Justification = "<Pending>")]
         public IValue EvaluateUnderScope(string expression, VariableList parameterMap)
         {
             //FunctionsList outScopeFunctions = new(functions);
