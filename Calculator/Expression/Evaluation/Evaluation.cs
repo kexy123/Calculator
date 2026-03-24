@@ -41,21 +41,20 @@ namespace Core.Expression.Evaluation
         private void PerformOperator(Token.Token token)
         {
             Operator operatorObject = Context.DetermineOperationFromString(token.Source);
-            IValue right = OutputStack.Pop();
-            IValue result;
-
             if (!operatorObject.HasProperty(OperatorProperty.Transitive)) PushTransitivity();
 
-            IValue left = OutputStack.Pop();
+            IValue right = OutputStack.Pop();
+            IValue? left = (!operatorObject.HasProperty(OperatorProperty.Unary)) ? OutputStack.Pop() : null;
+            IValue result;
 
             if (operatorObject.HasProperty(OperatorProperty.Unary)) result = operatorObject.Execute(new NothingToken(), right, Context);
-            else result = operatorObject.Execute(left, right, Context);
+            else result = operatorObject.Execute(left!, right, Context);
 
             if (operatorObject.HasProperty(OperatorProperty.Transitive))
             {
                 if (transitiveValue is not null) transitiveValue &= (BooleanToken)result;
                 else transitiveValue = (BooleanToken)result;
-                OutputStack.Push(left);
+                OutputStack.Push(left!);
             }
             else OutputStack.Push(result);
         }
