@@ -1,4 +1,4 @@
-﻿namespace CLI.Display
+﻿namespace CLI.Elements
 {
     public static class List
     {
