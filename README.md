@@ -75,3 +75,10 @@ Below is a table of operators in the `Arithmetic` calculator type:
 |`&&`|**And**|If `a` and `b` are `TRUE`, yield `TRUE`, else `FALSE`.|
 |`not!`|**Not**|Yield `FALSE` if `TRUE` and `TRUE` if `FALSE`.|
 |`->`|**Assign**|Assigns the given variable on the left to the value on the right, and returns the value on the right. For example, `TAU -> 2PI` would assign `TAU` to `2 * PI` and return the value of `2 * PI`.|
+
+## List of functions
+Below is a list of functions:
+|Function|Expression|Description|
+|-|--|---|
+|`SQRT(n)`|`n^0.5`, or $n^{0.5}$|Takes the square root of a number.|
+|`CBRT(n)`|`n^(1/3)`, or $n^\frac{1}{3}$|Takes the cube root of a number.|
