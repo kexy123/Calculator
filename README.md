@@ -33,7 +33,7 @@ When calculating an expression, it yields an array of tokens for the code to par
 Tokenization can be customied for each calculator type.
 
 ## Parsing
-The `Arithmetic` calculator type uses an extended version of Edgster Dijkstra's [shunting yard algorithm](https://en.wikipedia.org/wiki/Shunting_yard_algorithm) to turn an array of tokens into [reverse Polish notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation).
+The `Arithmetic` calculator type uses an extended version of Edgster Dijkstra's [shunting yard algorithm](https://en.wikipedia.org/wiki/Shunting_yard_algorithm) to turn an array of tokens into [postfix notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation).
 
 The `Arithmetic` parser contains the extended features:
 - **Conversion of unary and binary operations**: Can identify if the `-` in `-5` is an unary (single operand) `u-` or binary `-` subtraction operations.
