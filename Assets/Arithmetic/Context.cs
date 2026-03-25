@@ -47,7 +47,7 @@ namespace Core.AssetContexts
             else
             {
                 IValue value = tokenizer.Context.GetVariableFromName(match.Value);
-                tokenizer.AddToken(new(TokenProperty.Variable, match.Value, value));
+                tokenizer.AddToken(new(TokenProperty.Variable, value.AssignedVariable, value));
                 tokenizer.Index += value.AssignedVariable.Length;
             }
         };
@@ -73,7 +73,7 @@ namespace Core.AssetContexts
             new(@"\d*\.\d*", Tokens.DumpNumber),
             new(@"\d+", Tokens.DumpNumber),
 
-            new(@"[-+*/^%()|<>=,&!]+", Tokens.DumpOperation),
+            new(@"[-+*/^%(){}|<>=,&!]+", Tokens.DumpOperation),
         ];
     }
 
@@ -125,6 +125,9 @@ namespace Core.AssetContexts
     {
         public static readonly Operator OpenBracket = new("(", OperatorProperty.Bracket, 0, OperatorFunctions.DoNothing);
         public static readonly Operator ClosingBracket = new(")", OperatorProperty.ClosedBracket, 0, OperatorFunctions.DoNothing);
+        public static readonly Operator OpenPiecewiseBracket = new("{", OperatorProperty.Bracket, 0, OperatorFunctions.DoNothing);
+        public static readonly Operator ClosingPiecewiseBracket = new("}", OperatorProperty.ClosedBracket, 0, OperatorFunctions.DoNothing);
+
         public static readonly Operator Comma = new(",", OperatorProperty.Separator, 0, OperatorFunctions.DoNothing);
 
         //public static readonly Operator Colon = new(":", OperatorProperty.Separator, 0, OperatorFunctions.DoNothing);
@@ -157,6 +160,9 @@ namespace Core.AssetContexts
         {
             OpenBracket.Opposite = ClosingBracket;
             ClosingBracket.Opposite = OpenBracket;
+
+            OpenPiecewiseBracket.Opposite = ClosingPiecewiseBracket;
+            ClosingPiecewiseBracket.Opposite = OpenPiecewiseBracket;
         }
     }
 }
