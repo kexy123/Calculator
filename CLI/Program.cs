@@ -12,8 +12,8 @@ namespace CLI
         public static Dictionary<char, string> Options = new()
         {
             { 'C', "Calculate" },
-            { 'V', "Variable editing" },
-            { 'F', "Function editing" },
+            { 'V', "Variable view" },
+            //{ 'F', "Function view/editing" },
             { 'L', "Clear canvas" },
             { 'X', "Terminate" },
         };
@@ -46,13 +46,14 @@ namespace CLI
             Initialize();
 
             CalculatorContext context = new(new Arithmetic());
-            context.AssignVariable("pi", new NumberToken(Math.PI));
-            context.AssignVariable("e", new NumberToken(Math.E));
+            context.AssignVariable("PI", new NumberToken(Math.PI));
+            context.AssignVariable("E", new NumberToken(Math.E));
 
             context.AssignVariable("TRUE", new BooleanToken(true));
             context.AssignVariable("FALSE", new BooleanToken(false));
 
-            context.AssignFunction(new("sqrt", "n^0.5", ["n"]));
+            context.AssignFunction(new("SQRT", "n^0.5", ["n"]));
+            context.AssignFunction(new("CBRT", "n^(1/3)", ["n"]));
 
             while (true)
             {
@@ -66,6 +67,9 @@ namespace CLI
                     case "Calculate":
                         Evaluation.Evaluate(context);
                         Text.EmptySpace();
+                        break;
+                    case "Variable view":
+                        Variables.ShowVariables(context);
                         break;
                     case "Terminate":
                         return;

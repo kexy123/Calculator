@@ -9,7 +9,8 @@ namespace CLI.Pages
 {
     public static class Evaluation
     {
-        public static void Evaluate(CalculatorContext context) {
+        public static void Evaluate(CalculatorContext context)
+        {
             Text.WriteLine("=====CALCULATE EXPRESSION=====", "Header");
             Text.Write("Enter an expression to evaluate: ", "InputLabel");
             string? value = Console.ReadLine();
