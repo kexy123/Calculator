@@ -71,15 +71,13 @@ namespace Core.Expression
         }
         public IValue GetVariableFromName(string name)
         {
-            string sub = "";
-            int index = 0;
+            string sub = name;
             IValue? value;
-            do
+            while (!Variables.TryGetValue(sub, out value))
             {
-                if (index >= name.Length) return new NothingToken(name);
-                sub += name[index];
-                index++;
-            } while (!Variables.TryGetValue(sub, out value));
+                if (sub == "") return new NothingToken(name);
+                sub = sub[..^1];
+            }
             return value;
         }
 
